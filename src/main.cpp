@@ -29,8 +29,8 @@ int main()
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("Don't let the circle touch the cursor!", 10, 10, 20, LIGHTGRAY);
-        DrawCircleV(position, 25.0f, RED);
+        DrawText("Don't let the circle touch the cursor!", 10, 10, 20, RED);
+        DrawCircleV(position, radius, RED);
         EndDrawing();
     }
 
