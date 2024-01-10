@@ -25,12 +25,6 @@ public:
     }
 };
 
-// Regular function
-//void Draw(Table table)
-//{
-//    DrawRectangle(table.x, table.y, table.width, table.height, table.color);
-//}
-
 int main()
 {
     const int screenWidth = 1280;
@@ -50,8 +44,6 @@ int main()
     woodTable.legs[2] = woodTable.x + woodTable.width - woodTable.legWidth * 3.0f;
     woodTable.legs[3] = woodTable.x + woodTable.width - woodTable.legWidth;
     
-    const char* sentence = "asdkjashdkjh";
-
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     SetTargetFPS(60);
 
@@ -59,7 +51,6 @@ int main()
     {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText(sentence, screenWidth * 0.5f, screenHeight * 0.5f, 20, YELLOW);
         woodTable.Draw();
         EndDrawing();
     }
