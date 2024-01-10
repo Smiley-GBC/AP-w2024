@@ -1,6 +1,8 @@
 #include "raylib.h"
 #include "Math.h"
 
+const int LEGS_COUNT = 4;
+
 class Table
 {
 public:
@@ -8,19 +10,16 @@ public:
     float width, height;
     float legWidth, legHeight;
     float weight;
-    int legs;
+    float legs[LEGS_COUNT];
     Color legsColor;
     Color topColor;
 
     // Convert from function to method by removing the table parameter and refering to properties
     void Draw()
     {
-        float spacing = width / legs;
-        float legX = x;
-        for (int i = 0; i < legs; i++)
+        for (int i = 0; i < LEGS_COUNT; i++)
         {
-            DrawRectangle(legX, y, legWidth, legHeight, legsColor);
-            legX += spacing;
+            DrawRectangle(legs[i], y, legWidth, legHeight, legsColor);
         }
         DrawRectangle(x, y, width, height, topColor);
     }
@@ -43,9 +42,13 @@ int main()
     woodTable.width = 200.0f;
     woodTable.x = screenWidth * 0.5f - woodTable.width * 0.5f;
     woodTable.y = screenHeight * 0.75 - woodTable.height;
-    woodTable.legs = 4;
     woodTable.legWidth = 10.0f;
     woodTable.legHeight = woodTable.height * 3.0f;
+    woodTable.legs[0] = woodTable.x;
+    woodTable.legs[1] = woodTable.x + woodTable.legWidth * 3.0f;
+
+    woodTable.legs[2] = woodTable.x + woodTable.width - woodTable.legWidth * 3.0f;
+    woodTable.legs[3] = woodTable.x + woodTable.width - woodTable.legWidth;
     
     const char* sentence = "asdkjashdkjh";
 
