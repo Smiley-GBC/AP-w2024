@@ -61,10 +61,44 @@ void MemorySharing()
     helmet.steve = &steve;
 }
 
+// This means I'm "using the standard namespace", so I don't have to type std:: every time.
+using namespace std;
+
+
 // Practical pointers example
 void PointersPractice()
 {
+    float* numberPtr = nullptr;
+    float number = 0.0f;
+    numberPtr = &number;
+    float x = 1.1f;
+    float y = 2.2f;
+    float z = 3.3f;
 
+    // An example of outputting 3 numbers to the console
+    cout
+        << "X: " << x << endl
+        << "Y: " << y << endl
+        << "Z: " << z << endl;
+
+    // What if we wanted to store the current number and output it?
+    number = x;
+    cout << "Number as x: " << number << endl;
+
+    number = y;
+    cout << "Number as y: " << number << endl;
+
+    number = z;
+    cout << "Number as z: " << number << endl;
+
+    numberPtr = &x;
+    cout << "Number pointer as x: " << *numberPtr << endl;
+
+    numberPtr = &y;
+    cout << "Number pointer as y: " << *numberPtr << endl;
+
+    numberPtr = &z;
+    cout << "Number pointer as z: " << *numberPtr << endl;
 }
 
 int main()
