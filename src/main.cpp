@@ -1,39 +1,88 @@
-#include "raylib.h"
+//#include "raylib.h"
 #include "Math.h"
+#include <iostream>
 
-Vector2 Seek(Vector2 target, Vector2 position, Vector2 velocity, float speed)
+// Increments a copy of n
+void ByValue(int n)
 {
-    return Normalize(target - position) * speed - velocity;
+    n++;
+}
+
+// Increments n (& = ref in c#)
+void ByReference(int& n)
+{
+    n++;
+}
+
+// Review of passing by value vs passing by reference
+void Review()
+{
+    int x = 0;
+    int y = 0;
+    ByValue(x);
+    ByReference(y);
+    std::cout << "By value: " << x << std::endl << "By reference: " << y << std::endl;
+}
+
+struct Texture
+{
+    int width;
+    int height;
+    char data[];
+};
+
+struct Renderer
+{
+    Texture* steve;
+};
+
+struct ShapeShifter
+{
+    Texture* steve;
+};
+
+struct GoofyHelmet
+{
+    Texture* steve;
+};
+
+// Theoretical memory sharing example
+void MemorySharing()
+{
+    Texture steve;
+    Renderer renderer;
+    ShapeShifter shapeShifter;
+    GoofyHelmet helmet;
+
+    // "&" means "address". Pointers simply store addresses.
+    // So, we effectively share memory by pointing to the same address!
+    renderer.steve = &steve;
+    shapeShifter.steve = &steve;
+    helmet.steve = &steve;
+}
+
+// Practical pointers example
+void PointersPractice()
+{
+
 }
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    SetTargetFPS(60);
+    PointersPractice();
 
-    float radius = 25.0f;
-    Vector2 position{ screenWidth * 0.5f, screenHeight * 0.5f };
-    Vector2 velocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
-
-    while (!WindowShouldClose())
-    {
-        float dt = GetFrameTime();
-        Vector2 mouse = GetMousePosition();
-        velocity = velocity + Seek(mouse, position, velocity, 1000.0f) * dt;
-        position = position + velocity * dt;
-
-        if (CheckCollisionPointCircle(mouse, position, radius))
-            break;
-
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawText("Don't let the circle touch the cursor!", 10, 10, 20, RED);
-        DrawCircleV(position, radius, RED);
-        EndDrawing();
-    }
-
-    CloseWindow();
+    //const int screenWidth = 1280;
+    //const int screenHeight = 720;
+    //InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    //SetTargetFPS(60);
+    //
+    //while (!WindowShouldClose())
+    //{
+    //    BeginDrawing();
+    //    ClearBackground(RAYWHITE);
+    //    EndDrawing();
+    //}
+    //
+    //CloseWindow();
     return 0;
 }
