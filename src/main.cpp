@@ -101,6 +101,21 @@ void PointersPractice()
     cout << "Number pointer as z: " << *numberPtr << endl;
 }
 
+struct Circle1
+{
+public:
+    float GetRadius() { return radius; }
+    float SetRadius(float r) { radius = r; }
+
+private:
+    float radius;
+};
+
+struct Circle2
+{
+    float radius;
+};
+
 int main()
 {
     PointersPractice();
