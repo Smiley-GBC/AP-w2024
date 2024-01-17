@@ -27,6 +27,13 @@ public:
     }
 };
 
+void OutputAddress(int* ptr, int index, int count)
+{
+    //cout << "Address of index " << index << ": " << &ptr[index] << endl;
+    cout << "Value of index " << index << ": " << ptr[index] << endl;
+    cout << "Value of index " << index << ": " << *(ptr + index) << endl;
+}
+
 int main()
 {
     const int screenWidth = 1280;
@@ -48,22 +55,75 @@ int main()
 
     // Integer array allocated on the "stack" (constant size)
     int staticIntegers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    for (int i = 0; i < 10; i++)
-    {
-        cout << staticIntegers[i] << endl;
-    }
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    cout << staticIntegers[i] << endl;
+    //}
 
     // Integer array allocated on the "heap" (variable size)
     // The "new" keyword means "allocated on the heap"
     int* dynamicIntegers = new int[10];
-    for (int i = 0; i < 10; i++)
-    {
-        // We cannot initialize heap-arrays with curly braces,
-        // So we'll populate it with a for-loop!
-        cout << "Added of index " << i << ": " << &dynamicIntegers[i] << endl;
-        cout << "Value of index " << i << ": " << dynamicIntegers[i] << endl;
-    }
-    
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    // We cannot initialize heap-arrays with curly braces,
+    //    // So we'll populate it with a for-loop!
+    //    dynamicIntegers[i] = i + 1;
+    //    cout << "Address of index " << i << ": " << &dynamicIntegers[i] << endl;
+    //    cout << "Value of index " << i << ": " << dynamicIntegers[i] << endl;
+    //}
+
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    OutputAddress(staticIntegers, i, 10);
+    //}
+
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    OutputAddress(dynamicIntegers, i, 10);
+    //}
+
+    // Pointers doulbe as arrays.
+    // We can do "pointer arithmetic" to output individual values of an array by offsetting from the address of the first element
+    cout << *(staticIntegers + 0) << endl;
+    cout << *(staticIntegers + 1) << endl;
+    cout << *(staticIntegers + 2) << endl;
+    cout << *(staticIntegers + 3) << endl;
+    cout << *(staticIntegers + 4) << endl;
+    cout << *(staticIntegers + 5) << endl;
+    cout << *(staticIntegers + 6) << endl;
+    cout << *(staticIntegers + 7) << endl;
+    cout << *(staticIntegers + 8) << endl;
+    cout << *(staticIntegers + 9) << endl;
+
+    // Characters are 1 byte wide
+    // We're not adding 0 through 9 bytes to the 0th element. We're adding n * sizeof datatype
+    char characters[10]{ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+    cout << *(characters + 0) << endl;
+    cout << *(characters + 1) << endl;
+    cout << *(characters + 2) << endl;
+    cout << *(characters + 3) << endl;
+    cout << *(characters + 4) << endl;
+    cout << *(characters + 5) << endl;
+    cout << *(characters + 6) << endl;
+    cout << *(characters + 7) << endl;
+    cout << *(characters + 8) << endl;
+    cout << *(characters + 9) << endl;
+
+    cout << "Pointer arithmetic test:" << endl;
+
+    // Offsetting by these two amounts of bytes gives us the last element of our array
+    int integer9Offset = sizeof(int) * 9;
+    int character9Offset = sizeof(char) * 9;
+
+    // To test, we should see the same value twice in our console!
+    cout << *(characters + 9) << endl;
+    cout << *(characters + character9Offset) << endl;
+
+    // The integer test is harder to get working because we calculated our offset in bytes,
+    // but pointer arithmetic uses the width of the data type so 4 bytes per int + index 9 is a 36 byte offset (4 * 9 = 36)
+    //cout << *(staticIntegers + 9) << endl;
+    //cout << *(((char*)staticIntegers) + integer9Offset) << endl;
+
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     SetTargetFPS(60);
 
