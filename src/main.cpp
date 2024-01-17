@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include "Math.h"
+#include <iostream>
+using namespace std;
 
 const int LEGS_COUNT = 4;
 
@@ -43,6 +45,13 @@ int main()
 
     woodTable.legs[2] = woodTable.x + woodTable.width - woodTable.legWidth * 3.0f;
     woodTable.legs[3] = woodTable.x + woodTable.width - woodTable.legWidth;
+
+    // Simple array example
+    int integers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    for (int i = 0; i < 10; i++)
+    {
+        cout << integers[i] << endl;
+    }
     
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     SetTargetFPS(60);
