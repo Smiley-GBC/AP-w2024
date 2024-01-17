@@ -46,11 +46,22 @@ int main()
     woodTable.legs[2] = woodTable.x + woodTable.width - woodTable.legWidth * 3.0f;
     woodTable.legs[3] = woodTable.x + woodTable.width - woodTable.legWidth;
 
-    // Simple array example
-    int integers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    // Integer array allocated on the "stack" (constant size)
+    int staticIntegers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     for (int i = 0; i < 10; i++)
     {
-        cout << integers[i] << endl;
+        cout << staticIntegers[i] << endl;
+    }
+
+    // Integer array allocated on the "heap" (variable size)
+    // The "new" keyword means "allocated on the heap"
+    int* dynamicIntegers = new int[10];
+    for (int i = 0; i < 10; i++)
+    {
+        // We cannot initialize heap-arrays with curly braces,
+        // So we'll populate it with a for-loop!
+        cout << "Added of index " << i << ": " << &dynamicIntegers[i] << endl;
+        cout << "Value of index " << i << ": " << dynamicIntegers[i] << endl;
     }
     
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
