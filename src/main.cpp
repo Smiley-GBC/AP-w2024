@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "Math.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 const int LEGS_COUNT = 4;
@@ -32,6 +33,67 @@ void OutputAddress(int* ptr, int index, int count)
     //cout << "Address of index " << index << ": " << &ptr[index] << endl;
     cout << "Value of index " << index << ": " << ptr[index] << endl;
     cout << "Value of index " << index << ": " << *(ptr + index) << endl;
+}
+
+// Inner layer
+struct Item
+{
+    // We don't need any more arrays since this is the inner layer
+    // Just add whatever data an item should have here
+    string name = "Candy";
+    float price = 2.00f;
+};
+
+// Middle layer
+struct Store
+{
+    // See Corporation's explanation
+    int itemCount = 0;
+    Item* items = nullptr;
+    int latitude = 1, longitude = 2;
+};
+
+// Outer layer
+struct Corporation
+{
+    // We don't know how many stores the corporation has.
+    // Hence, we must make it a dynamic array so we determine
+    // the number of stores when our program runs!
+    int storeCount = 0;
+    Store* stores = nullptr;
+    string address = "Test address";
+};
+
+void CreateItem(Item& item)
+{
+    float price = 0.0f;
+    cout << "What is the price of your item?" << endl;
+    cin >> price;
+    item.price = price;
+}
+
+void CreateStore(Store& store)
+{
+    cout << "How many items do you have?" << endl;
+    cin >> store.itemCount;
+    store.items = new Item[store.itemCount];
+
+    for (int i = 0; i < store.itemCount; i++)
+    {
+        CreateItem(store.items[i]);
+    }
+}
+
+void CreateCorporation(Corporation& corp)
+{
+    cout << "How many stores do you own?" << endl;
+    cin >> corp.storeCount;
+    corp.stores = new Store[corp.storeCount];
+
+    for (int i = 0; i < corp.storeCount; i++)
+    {
+        CreateStore(corp.stores[i]);
+    }
 }
 
 int main()
@@ -123,6 +185,23 @@ int main()
     // but pointer arithmetic uses the width of the data type so 4 bytes per int + index 9 is a 36 byte offset (4 * 9 = 36)
     //cout << *(staticIntegers + 9) << endl;
     //cout << *(((char*)staticIntegers) + integer9Offset) << endl;
+
+    Corporation corp;
+    CreateCorporation(corp);
+
+    for (int i = 0; i < corp.storeCount; i++)
+    {
+        cout << corp.address << endl;
+        for (int j = 0; j < corp.storeCount; j++)
+        {
+            cout << corp.stores[j].longitude << corp.stores[j].longitude << endl;
+            for (int k = 0; k < corp.stores[j].itemCount; k++)
+            {
+                cout << corp.stores[j].items[k].name << endl;
+                cout << corp.stores[j].items[k].price << endl;
+            }
+        }
+    }
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     SetTargetFPS(60);
