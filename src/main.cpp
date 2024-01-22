@@ -18,7 +18,7 @@ struct Circle2
     float radius;
 };
 
-int main()
+void PointerArithmetic()
 {
     int numbers[] = { 1, 2, 3, 4, 5 };
     cout << numbers[0] << endl;
@@ -51,6 +51,21 @@ int main()
     cout << (int)*(start + 2 * offset) << endl;
     cout << (int)*(start + 3 * offset) << endl;
     cout << (int)*(start + 4 * offset) << endl;
+
+    // Again, we can use pointer arithmetic to iterate through an array!
+    // Points to numbers[0] (since numbers is just a pointer)
+    int* numberPtr = numbers;
+    cout << *numberPtr++ << endl;
+    cout << *numberPtr++ << endl;
+    cout << *numberPtr++ << endl;
+    cout << *numberPtr++ << endl;
+    cout << *numberPtr++ << endl;
+}
+
+int main()
+{
+    // Pointer math examples ranging from automatic to manual
+    //PointerArithmetic();
 
     //const int screenWidth = 1280;
     //const int screenHeight = 720;
