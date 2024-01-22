@@ -61,31 +61,98 @@ public:
     // Just like functions, we can overload constructors!
     Test(int integer)
     {
+        value = integer;
         cout << "Test overloaded int constructor " << integer << endl;
     }
 
     Test(float decimal)
     {
+        value = decimal;
         cout << "Test overloaded float constructor " << decimal << endl;
     }
 
-private:
+    // This is called the "destructor" (indicated by '~').
+    // It runs when an object is destroyed!
+    ~Test()
+    {
+        cout << "Test " << value << " destroyed." << endl;
+    }
 
+    float value;
 };
 
-int main()
+// Case 1: objects are destroyed because they've gone out of scope
+// This is because they're created on the "stack".
+// The stack is memory alloacted before the program runs by the compiler.
+// It is generally preferable because the compiler automatically deallocates the memory.
+// The downside is it is fixed-size, so we must know the amount of memory needed.
+// "The stack means the compiler does our baby-sitting for us :)"
+void StackConstructorDestructor()
 {
-    // Pointer math examples ranging from automatic to manual
-    //PointerArithmetic();
-
     // Function overloading example (same name and argument count, different behaviour)
-    cout << "Integer add: " << Add((int)1.75f, (int)2.5f) << endl;
-    cout << "Decimal add: " << Add(1.75f, 2.5f) << endl;
+    //cout << "Integer add: " << Add((int)1.75f, (int)2.5f) << endl;
+    //cout << "Decimal add: " << Add(1.75f, 2.5f) << endl;
 
     // We can overload constructors just like functions.
     // "Just because we *can* doesn't mean we *should*".
     Test test1(1);   // Outputs "Test overloaded int constructor 1"
     Test test2(1.5f);// Outputs "Test overloaded float constructor 1.5"
+
+    // Outputs "Test 1.5 destroyed."
+    // Outputs "Test 1 destroyed."
+    // This is because objects are destroyed in the opposite order they were created.
+    // (Has to do with the way they're allocated on the stack).
+}
+
+void HeapConstructorDestructor()
+{
+    // Initialize pointers to nullptr (address 0) for safety
+    Test* test1 = nullptr;
+    Test* test2 = nullptr;
+
+    // Dereferencing a null-pointer is allowed
+    //*test1;
+
+    // Reading from or writing to a null pointer is FORBIDDEN!!! (Crashes the program)
+    //cout << test2->value << endl;
+
+    // When allocating an object on the "heap" (basically somewhere in your ram),
+    // we use the "new" operator. This returns us a pointer to the object's memory.
+    test1 = new Test(1);
+    test2 = new Test(1.5f);
+
+    // "->" means "*(object.value)" aka same as '.' but automatically dereferenced
+    cout << test1->value << endl;
+    cout << test2->value << endl;
+
+    // When allocating with new, we must deallocate with delete.
+    // (We're the babysitter instead of the compiler).
+    delete test1;
+    delete test2;
+
+    // After deleting pointers, we want to invalidate them by assigning to nullptr.
+    // This will result in our program crashing instead of outputting garbage!
+
+    // Version 1 (bad):
+    //cout << test1->value << endl;
+    //cout << test2->value << endl;
+    //test1 = nullptr;
+    //test2 = nullptr;
+
+    // Version 2 (good):
+    //test1 = nullptr;
+    //test2 = nullptr;
+    //cout << test1->value << endl; // crash x1
+    //cout << test2->value << endl; // crash x2
+}
+
+int main()
+{
+    // Pointer math examples ranging from automatic to manual
+    PointerArithmetic();
+
+    StackConstructorDestructor();
+    HeapConstructorDestructor();
 
     //const int screenWidth = 1280;
     //const int screenHeight = 720;
