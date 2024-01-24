@@ -13,6 +13,15 @@ struct Enemy
     Color color = RED;
     float speed = 300.0f;
 
+    // static methods can only use data common to all objects, effectively only static members.
+    // position, radius and color are enemy-specific, not common to all enemies
+    // only baseRadius, baseSpeed, and enemies (the static members) are common to all enemies.
+    //static void Test()
+    //{
+    //    DrawCircleV(position, radius, color);
+    //}
+
+    // We can have "static methods" which are functions common to all objects of a type (ie common to all Enemies)
     static void Create()
     {
         // {} creates an empty object, so we're adding 4 empty enemies to our list
@@ -44,12 +53,11 @@ struct Enemy
         }
     }
 
-    static void Draw(unsigned char a)
+    static void Render(unsigned char a)
     {
         for (int i = 0; i < enemies.size(); i++)
         {
-            enemies[i].color.a = a;
-            DrawCircleV(enemies[i].position, enemies[i].radius, enemies[i].color);
+            enemies[i].Draw(a);
         }
     }
 
@@ -61,6 +69,12 @@ struct Enemy
             // AB = B - A
             position = position + Normalize(targetPosition - position) * speed * dt;
         }
+    }
+
+    void Draw(unsigned char a)
+    {
+        color.a = a;
+        DrawCircleV(position, radius, color);
     }
 
     // When used within an object, "static" means "common to all objects" (memory sharing).
@@ -128,7 +142,7 @@ int main()
 
         BeginDrawing();
         ClearBackground(GRAY);
-        Enemy::Draw(a);
+        Enemy::Render(a);
         DrawCircleV(player, playerRadius, YELLOW);
         EndDrawing();
     }
