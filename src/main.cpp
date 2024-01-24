@@ -19,7 +19,15 @@ struct Enemy
             position = position + Normalize(targetPosition - position) * speed * dt;
         }
     }
+
+    // When used within an object, "static" means "common to all objects"
+    // So the value of baseRadius and baseSpeed will be shared across all enemies
+    static float baseRadius;
+    static float baseSpeed;
 };
+
+float Enemy::baseRadius = 50.0f;
+float Enemy::baseSpeed = 250.0f;
 
 int main()
 {
@@ -30,6 +38,7 @@ int main()
     Vector2 player = centre;
     float playerSpeed = 500.0f;
     float playerRadius = 50.0f;
+
 
     std::vector<Enemy> enemies;
     
@@ -43,6 +52,12 @@ int main()
     enemies[1].position = Vector2{ screenWidth * 0.9f, screenHeight * 0.1f };
     enemies[2].position = Vector2{ screenWidth * 0.9f, screenHeight * 0.9f };
     enemies[3].position = Vector2{ screenWidth * 0.1f, screenHeight * 0.9f };
+
+    for (int i = 0; i < enemies.size(); i++)
+    {
+        enemies[i].radius = Enemy::baseRadius + Random(-25.0f, 25.0f);
+        enemies[i].speed = Enemy::baseSpeed + Random(-250.0f, 250.0f);
+    }
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     SetTargetFPS(60);
