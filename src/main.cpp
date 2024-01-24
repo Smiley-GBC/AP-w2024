@@ -10,6 +10,16 @@ struct Enemy
     float radius = 75.0f;
     Color color = RED;
     float speed = 300.0f;
+
+    void Move(Vector2 targetPosition, float targetRadius, float dt)
+    {
+        bool collision = CheckCollisionCircles(position, radius * 3.0f, targetPosition, targetRadius);
+        if (collision)
+        {
+            // AB = B - A
+            position = position + Normalize(targetPosition - position) * speed * dt;
+        }
+    }
 };
 
 int main()
@@ -73,6 +83,11 @@ int main()
             // AB = B - A
             Vector2 toPlayer = Normalize(player - enemy);
             enemy = enemy + toPlayer * enemySpeed * dt;
+        }
+
+        for (int i = 0; i < enemies.size(); i++)
+        {
+            enemies[i].Move(player, playerRadius, dt);
         }
 
         BeginDrawing();
