@@ -94,7 +94,7 @@ public:
     void operator delete(void* p)
     {
         cout << "Overloading scalar delete operator " << endl;
-        free(p);
+        ::delete p;
     }
 
     // Since the compiler differentiates between scalar new and array new[], we can overload it too!
@@ -109,7 +109,7 @@ public:
     void operator delete[](void* p)
     {
         cout << "Overloading array delete[] operator " << endl;
-        free(p);
+        delete[] p;
     }
 
     float value;
