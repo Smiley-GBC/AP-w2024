@@ -78,6 +78,40 @@ public:
         cout << "Test " << value << " destroyed." << endl;
     }
 
+    // Custom code that runs when we allocate Test with scalar-new
+    void* operator new(size_t size)
+    {
+        cout << "Overloading scalar new operator with size: " << size << endl;
+
+        // We know that Test has a size of 4 bytes since its only data is float value (float = 4 bytes)
+        // We must reserve 4 bytes of RAM. We do so by alloacting an untyped pointer (void*) via global new (::operator new(size)).
+        void* p = ::operator new(size);
+        // Once we've alloacted memory, simply return it and interpret (implicit cast) it to Test!
+        return p;
+    }
+
+    // Custom code that runs when we deallocate Test with delete-new
+    void operator delete(void* p)
+    {
+        cout << "Overloading scalar delete operator " << endl;
+        free(p);
+    }
+
+    // Since the compiler differentiates between scalar new and array new[], we can overload it too!
+    void* operator new[](size_t size)
+    {
+        cout << "Overloading array new[] operator with size: " << size << endl;
+        void* p = ::operator new[](size);
+        return p;
+    }
+
+    // Since the compiler differentiates between scalar delete and array delete[], we can overload it too!
+    void operator delete[](void* p)
+    {
+        cout << "Overloading array delete[] operator " << endl;
+        free(p);
+    }
+
     float value;
 };
 
@@ -174,6 +208,101 @@ void HeapArray()
     cout << endl;
 }
 
+// Whenever we see "a + b", the compiler runs this function!
+float operator+(const Test& a, const Test& b)
+{
+    cout << "A + B: " << a.value + b.value << endl;
+    return a.value + b.value;
+}
+
+// Whenever we see "a - b", the compiler runs this function!
+float operator-(const Test& a, const Test& b)
+{
+    cout << "A - B: " << a.value - b.value << endl;
+    return a.value - b.value;
+}
+
+// Whenever we see "a * b", the compiler runs this function!
+float operator*(const Test& a, const Test& b)
+{
+    cout << "A * B: " << a.value * b.value << endl;
+    return a.value * b.value;
+}
+
+// Whenever we see "a / b", the compiler runs this function!
+float operator/(const Test& a, const Test& b)
+{
+    cout << "A / B: " << a.value / b.value << endl;
+    return a.value / b.value;
+}
+
+// We can do weird c++ things like overload
+// input ("stream extraction") and ouput ("stream insertion") operators:
+istream& operator>>(istream& in, Test& test/*non-constant reference cause we're modifying test*/)
+{
+    cout << "Enter the value of test: ";
+    in >> test.value;
+    return in;
+}
+
+ostream& operator<<(ostream& out, const Test& test/*constant reference cause test is read-only*/)
+{
+    out << "Test value: " << test.value << endl;
+    return out;
+}
+
+// Note that objects should be passed by-reference '&' to prevent destructor invocations.
+void MathOperators()
+{
+    // We're all familiar with basic math operators (+ - * /)
+    float n = 1.0f;
+    float m = 2.0f;
+    cout << n + m << endl;
+    cout << n - m << endl;
+    cout << n * m << endl;
+    cout << n / m << endl << endl;
+
+    // Since Test is a user-defined object (ADT), the compiler doesn't know how to add two tests.
+    // The compiler only knows how to do math on primitive (built-in, ie int, float etc) data-types!
+    // However, we can overload operators should we want this behaviour for our data-types.
+    Test a(1.0f);
+    Test b(2.0f);
+    a + b;
+    a - b;
+    a * b;
+    a / b;
+}
+
+void StreamOperators()
+{
+    float c;
+    cout << "Enter a decimal number: ";
+    cin >> c;
+    cout << "Decimal value: " << c << endl;
+
+    // Just like math, the compiler doesn't know how to input & output custom objects to/from streams.
+    // Hence, we must give it some help via operator overloading (stream insertion << and stream extraction >>)
+    Test d;
+    cin >> d;
+    cout << d;
+
+    // Generally << and >> aren't very useful. Don't worry if its weird and makes little sense.
+    // Focus on understanding the math operator overloads (+ - * /)
+}
+
+void MemoryOperators()
+{
+    // Calls Test::new, followed by Test's default constructor.
+    // This makes sense because we need to alloacte space for the object before we can construct the object!
+    Test* a = new Test;
+    Test* b = new Test[2];
+
+    // Delete calls the destructor, and then deallocates the memory (opposite order of initialization).
+    delete a;
+    delete[] b;
+    cout << endl;
+}
+
 int main()
 {
     // Pointer math examples ranging from automatic to manual
@@ -183,7 +312,12 @@ int main()
     //HeapConstructorDestructor();
 
     //StackArray();
-    HeapArray();
+    //HeapArray();
+
+    //MathOperators();
+    //StreamOperators();
+
+    MemoryOperators();
 
     //const int screenWidth = 1280;
     //const int screenHeight = 720;
