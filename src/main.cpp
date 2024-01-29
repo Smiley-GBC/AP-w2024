@@ -95,6 +95,7 @@ void StackConstructorDestructor()
 
     // We can overload constructors just like functions.
     // "Just because we *can* doesn't mean we *should*".
+    Test test;       // Outputs "Test default constructor. . ."
     Test test1(1);   // Outputs "Test overloaded int constructor 1"
     Test test2(1.5f);// Outputs "Test overloaded float constructor 1.5"
 
@@ -146,13 +147,43 @@ void HeapConstructorDestructor()
     //cout << test2->value << endl; // crash x2
 }
 
+void StackArray()
+{
+    Test tests[10];
+    for (int i = 0; i < 10; i++)
+    {
+        cout << tests[i].value << endl;
+    }
+    cout << endl;
+}
+
+void HeapArray()
+{
+    Test* tests = new Test[10];
+    for (int i = 0; i < 10; i++)
+    {
+        cout << tests[i].value << endl;
+    }
+
+    // If we allocate an array with "new[]", we must deallocate with "delete[]"
+    // Moreover, if we used "delete" instead of "delete[]", our program will crash
+    // since the memory reserves for new/delete vs new[]/delete[] are different!
+    // (new/delete = "scalar new" & "scalar delete", new[]/delete[] = "array new" & "array delete").
+    //delete tests;
+    delete[] tests;
+    cout << endl;
+}
+
 int main()
 {
     // Pointer math examples ranging from automatic to manual
-    PointerArithmetic();
+    //PointerArithmetic();
 
-    StackConstructorDestructor();
-    HeapConstructorDestructor();
+    //StackConstructorDestructor();
+    //HeapConstructorDestructor();
+
+    //StackArray();
+    HeapArray();
 
     //const int screenWidth = 1280;
     //const int screenHeight = 720;
