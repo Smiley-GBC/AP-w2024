@@ -1,39 +1,68 @@
-#include "raylib.h"
-#include "Math.h"
+#include <raylib.h>
+#include <Math.h>
+#include <iostream>
 
-Vector2 Seek(Vector2 target, Vector2 position, Vector2 velocity, float speed)
+using namespace std;
+
+//Pointer to a function that returns void and takes no arguments
+using DrawShape = void(*)();
+
+void DrawCircle()
 {
-    return Normalize(target - position) * speed - velocity;
+	cout << " #####" << endl;
+	cout << "#     #" << endl;
+	cout << "#     #" << endl;
+	cout << "#     #" << endl;
+	cout << " ##### " << endl;
+}
+
+void DrawRectangle()
+{
+	cout << "########" << endl;
+	cout << "#      #" << endl;
+	cout << "#      #" << endl;
+	cout << "#      #" << endl;
+	cout << "########" << endl;
+}
+
+void DrawTriangle()
+{
+	cout << "    #   " << endl;
+	cout << "  #  #  " << endl;
+	cout << "#      #" << endl;
+	cout << "########" << endl;
+}
+
+void DrawManually()
+{
+	DrawShape drawShape = nullptr;
+
+	drawShape = DrawCircle;
+	drawShape();
+
+	drawShape = DrawRectangle;
+	drawShape();
+
+	drawShape = DrawTriangle;
+	drawShape();
+}
+
+void DrawAutomatically()
+{
+	DrawShape shapes[] = { DrawCircle, DrawRectangle, DrawTriangle };
+
+	for (int i = 0; i < 3; i++) {
+		shapes[i]();
+	}
 }
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    SetTargetFPS(60);
+	cout << "Drawing manually. " << endl;
+	DrawManually();
 
-    float radius = 25.0f;
-    Vector2 position{ screenWidth * 0.5f, screenHeight * 0.5f };
-    Vector2 velocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
 
-    while (!WindowShouldClose())
-    {
-        float dt = GetFrameTime();
-        Vector2 mouse = GetMousePosition();
-        velocity = velocity + Seek(mouse, position, velocity, 1000.0f) * dt;
-        position = position + velocity * dt;
-
-        if (CheckCollisionPointCircle(mouse, position, radius))
-            break;
-
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawText("Don't let the circle touch the cursor!", 10, 10, 20, RED);
-        DrawCircleV(position, radius, RED);
-        EndDrawing();
-    }
-
-    CloseWindow();
-    return 0;
+	cout << "Drawing Automatically" << endl;
+	DrawAutomatically();
+	return 0;
 }
