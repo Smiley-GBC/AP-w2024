@@ -1,6 +1,7 @@
 //#include "raylib.h"
 #include "Math.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct Enemy
@@ -29,28 +30,68 @@ struct Player
 
 float Player::baseHealth;
 
+// "Forward-declaration" (just like static variables, we can have function declarations, and definitions)
 void StaticExamples();
+
+
+struct Insect
+{
+    // Common variables for all insects
+    int legs;
+    int wings;
+    float weight;
+    float exoskeleton;
+    string name;
+    string type;
+
+    // Common functions for all insects
+    void Name()
+    {
+        cout << "Hello I'm " << name << " the " << type << endl;
+    }
+};
+
+// ':' means "inherits from"
+// Bee IS an Insect (has legs, wings, weight and exoskeleton)
+struct Bee : public Insect
+{
+    float stingPower;
+    int honeyCount;
+    int pollunCount;
+    bool hasSpicyPersonality;
+    string hiveName;
+};
+
+// Grasshopper IS an Insect (has legs, wings, weight and exoskeleton)
+struct Grasshopper : public Insect
+{
+    float jumpHeight;
+    float jumpDistance;
+    string sound;
+    bool dismembersBugs;
+    bool eatsMate;
+    int killCount;
+};
 
 int main()
 {
-    StaticExamples();
+    Grasshopper gary;
+    gary.name = "Gary";
+    gary.type = "Grasshopper";
 
-    //const int screenWidth = 1280;
-    //const int screenHeight = 720;
-    //InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    //SetTargetFPS(60);
-    //
-    //while (!WindowShouldClose())
-    //{
-    //    BeginDrawing();
-    //    ClearBackground(RAYWHITE);
-    //    EndDrawing();
-    //}
-    //
-    //CloseWindow();
+    Bee barry;
+    barry.name = "Barry";
+    barry.type = "Bee";
+
+    gary.Name();
+    barry.Name();
+
+    //StaticExamples();
+
     return 0;
 }
 
+// Function definition
 void StaticExamples()
 {
     // Why :: is useful:
@@ -91,3 +132,17 @@ void StaticExamples()
     cout << "Player 3 health: " << player3.health << endl;
     cout << "Player 4 health: " << player4.health << endl;
 }
+
+//const int screenWidth = 1280;
+//const int screenHeight = 720;
+//InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+//SetTargetFPS(60);
+//
+//while (!WindowShouldClose())
+//{
+//    BeginDrawing();
+//    ClearBackground(RAYWHITE);
+//    EndDrawing();
+//}
+//
+//CloseWindow();
