@@ -34,6 +34,11 @@ private:
     float radius;
 };
 
+unsigned int Add(unsigned int a, unsigned int b)
+{
+    return a + b;
+}
+
 int Add(int a, int b)
 {
     return a + b;
@@ -86,6 +91,10 @@ public:
         // We know that Test has a size of 4 bytes since its only data is float value (float = 4 bytes)
         // We must reserve 4 bytes of RAM. We do so by alloacting an untyped pointer (void*) via global new (::operator new(size)).
         void* p = ::operator new(size);
+
+        // Keep track of allocation size
+        allocationBytes += size;
+
         // Once we've alloacted memory, simply return it and interpret (implicit cast) it to Test!
         return p;
     }
@@ -94,6 +103,10 @@ public:
     void operator delete(void* p)
     {
         cout << "Overloading scalar delete operator " << endl;
+
+        // Subtract size of class on-deallocation
+        allocationBytes -= sizeof(Test);
+
         ::delete p;
     }
 
@@ -102,6 +115,11 @@ public:
     {
         cout << "Overloading array new[] operator with size: " << size << endl;
         void* p = ::operator new[](size);
+
+        // For array new and array delete, we don't know how many elements we're allocating/deallocating
+        // We'd have to do some math on the size we receive and encode it somehow.
+        // Might be a meaningful homework exercise to implement said tracking!
+        //allocationBytes += size;
         return p;
     }
 
@@ -113,7 +131,13 @@ public:
     }
 
     float value;
+
+public:
+    static int allocationBytes;
 };
+
+// This needs to be here otherwise we get linker errors
+int Test::allocationBytes;
 
 // Case 1: objects are destroyed because they've gone out of scope
 // This is because they're created on the "stack".
@@ -294,17 +318,43 @@ void MemoryOperators()
 {
     // Calls Test::new, followed by Test's default constructor.
     // This makes sense because we need to alloacte space for the object before we can construct the object!
+    
+    cout << Test::allocationBytes << endl;
     Test* a = new Test;
+    cout << Test::allocationBytes << endl;
+    Test* a1 = new Test;
+    cout << Test::allocationBytes << endl;
+    Test* a2 = new Test;
+    cout << Test::allocationBytes << endl;
+    Test* a3 = new Test;
+    cout << Test::allocationBytes << endl;
+
     Test* b = new Test[2];
 
     // Delete calls the destructor, and then deallocates the memory (opposite order of initialization).
     delete a;
+    cout << Test::allocationBytes << endl;
+    delete a1;
+    cout << Test::allocationBytes << endl;
+    delete a2;
+    cout << Test::allocationBytes << endl;
+    delete a3;
+    cout << Test::allocationBytes << endl;
+
     delete[] b;
     cout << endl;
 }
 
 int main()
 {
+    // Signed vs unsigned function overloads
+    //unsigned int a1 = 1;
+    //unsigned int a2 = 2;
+    //int a3 = -3;
+    //int a4 = -4;
+    //Add(a1, a2);
+    //Add(a3, a4);
+
     // Pointer math examples ranging from automatic to manual
     //PointerArithmetic();
 
