@@ -76,6 +76,7 @@ struct Grasshopper : public Insect
 void Inhertiance();
 
 // Method 1: "Old-School" polymorphism -- if you want different behaviours, just manually check your type!
+// Use if you like the syntax, OR if your code is performance-critical (best performance)
 enum SoundType
 {
     DOG,
@@ -105,6 +106,7 @@ string MakeSound(SoundType type)
 // Method 2: function pointers
 // We read this as "SoundFunction is a pointer to a function that returns a string and takes no arguments"
 // (See bottom of file for more examples)
+// Use when you have strictly behaviour (medium performance)
 using SoundFunction = string(*)();
 
 string Bark()
@@ -128,6 +130,7 @@ string Yip()
 }
 
 // Method 3 -- "Object-Oriented" polymorphism
+// Use when you NEED to bundle data AND behaviour (slow performance)
 struct Animal
 {
     // Not sure what sound our animals make by default...
@@ -139,7 +142,7 @@ struct Animal
 
 struct Dog : public Animal
 {
-    virtual string Sound()
+    virtual string Sound() override
     {
         return "Woof!";
     }
@@ -147,7 +150,7 @@ struct Dog : public Animal
 
 struct Cat : public Animal
 {
-    virtual string Sound()
+    virtual string Sound() override
     {
         return "Meow!";
     }
@@ -155,7 +158,7 @@ struct Cat : public Animal
 
 struct Cow : public Animal
 {
-    virtual string Sound()
+    virtual string Sound() override
     {
         return "MOOOOOOOOOOOOOOOOOOOOO";
     }
@@ -163,7 +166,7 @@ struct Cow : public Animal
 
 struct Fox : public Animal
 {
-    virtual string Sound()
+    virtual string Sound() override
     {
         return "Yip yip!";
     }
@@ -185,7 +188,7 @@ void Polymorphism()
     cout << MakeSound(soundType) << endl;
 
     // Method 2
-    cout << "Method 2:" << endl;
+    cout << endl << "Method 2:" << endl;
     SoundFunction soundFunction = nullptr;
 
     soundFunction = Bark;
@@ -197,7 +200,7 @@ void Polymorphism()
     soundFunction = Yip;
     cout << soundFunction() << endl;
 
-    cout << "Method 3:" << endl;
+    cout << endl << "Method 3:" << endl;
     Animal* animal = nullptr;
 
     animal = new Dog;
@@ -208,6 +211,17 @@ void Polymorphism()
     cout << animal->Sound() << endl;
     animal = new Fox;
     cout << animal->Sound() << endl;
+
+    cout << endl << "Automation examples:" << endl;
+    SoundType types[] = { DOG, CAT, COW, FOX };
+    SoundFunction functions[] = { Bark, Meow, Moo, Yip };
+    Animal* animals[] = { new Dog, new Cat, new Cow, new Fox };
+    for (int i = 0; i < 4; i++)
+    {
+        cout << MakeSound(types[i]) << endl;    // Look up sound based on type
+        cout << functions[i]() << endl;         // Just an array of functions, so simply invoke the current function!
+        cout << animals[i]->Sound() << endl;    // Invoke animal-specific sound
+    }
 }
 
 int main()
