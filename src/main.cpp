@@ -319,6 +319,8 @@ void MemoryOperators()
     // Calls Test::new, followed by Test's default constructor.
     // This makes sense because we need to alloacte space for the object before we can construct the object!
     
+    // "static" means "we don't need an instance to use it"
+    // static is used for general-purpose calculations since it can't rely on individual objects
     cout << Test::allocationBytes << endl;
     Test* a = new Test;
     cout << Test::allocationBytes << endl;
