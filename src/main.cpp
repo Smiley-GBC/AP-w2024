@@ -29,7 +29,29 @@ struct Player
 
 float Player::baseHealth;
 
+void StaticExamples();
+
 int main()
+{
+    StaticExamples();
+
+    //const int screenWidth = 1280;
+    //const int screenHeight = 720;
+    //InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    //SetTargetFPS(60);
+    //
+    //while (!WindowShouldClose())
+    //{
+    //    BeginDrawing();
+    //    ClearBackground(RAYWHITE);
+    //    EndDrawing();
+    //}
+    //
+    //CloseWindow();
+    return 0;
+}
+
+void StaticExamples()
 {
     // Why :: is useful:
     // We know we can't have duplicate variables because the compiler can't tell the difference.
@@ -68,19 +90,4 @@ int main()
     cout << "Player 2 health: " << player2.health << endl;
     cout << "Player 3 health: " << player3.health << endl;
     cout << "Player 4 health: " << player4.health << endl;
-
-    //const int screenWidth = 1280;
-    //const int screenHeight = 720;
-    //InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    //SetTargetFPS(60);
-    //
-    //while (!WindowShouldClose())
-    //{
-    //    BeginDrawing();
-    //    ClearBackground(RAYWHITE);
-    //    EndDrawing();
-    //}
-    //
-    //CloseWindow();
-    return 0;
 }
