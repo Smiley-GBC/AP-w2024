@@ -73,7 +73,153 @@ struct Grasshopper : public Insect
     int killCount;
 };
 
+void Inhertiance();
+
+// Method 1: "Old-School" polymorphism -- if you want different behaviours, just manually check your type!
+enum SoundType
+{
+    DOG,
+    CAT,
+    COW,
+    FOX
+};
+
+string MakeSound(SoundType type)
+{
+    switch (type)
+    {
+    case DOG:
+        return "Woof!";
+
+    case CAT:
+        return "Meow!";
+
+    case COW:
+        return "MOOOOOOOOOOOOOOOOOOOOO";
+
+    case FOX:
+        return "Yip yip!";
+    }
+}
+
+// Method 2: function pointers
+// We read this as "SoundFunction is a pointer to a function that returns a string and takes no arguments"
+// (See bottom of file for more examples)
+using SoundFunction = string(*)();
+
+string Bark()
+{
+    return "Woof!";
+}
+
+string Meow()
+{
+    return "Meow!";
+}
+
+string Moo()
+{
+    return "MOOOOOOOOOOOOOOOOOOOOO!";
+}
+
+string Yip()
+{
+    return "Yip yip!";
+}
+
+// Method 3 -- "Object-Oriented" polymorphism
+struct Animal
+{
+    // Not sure what sound our animals make by default...
+    virtual string Sound()    // "virtual" means derived classes can *override* said method
+    {
+        return "Generic animal noises";
+    }
+};
+
+struct Dog : public Animal
+{
+    virtual string Sound()
+    {
+        return "Woof!";
+    }
+};
+
+struct Cat : public Animal
+{
+    virtual string Sound()
+    {
+        return "Meow!";
+    }
+};
+
+struct Cow : public Animal
+{
+    virtual string Sound()
+    {
+        return "MOOOOOOOOOOOOOOOOOOOOO";
+    }
+};
+
+struct Fox : public Animal
+{
+    virtual string Sound()
+    {
+        return "Yip yip!";
+    }
+};
+
+void Polymorphism()
+{
+    // Method 1
+    cout << "Method 1:" << endl;
+    SoundType soundType;
+
+    soundType = DOG;
+    cout << MakeSound(soundType) << endl;
+    soundType = CAT;
+    cout << MakeSound(soundType) << endl;
+    soundType = COW;
+    cout << MakeSound(soundType) << endl;
+    soundType = FOX;
+    cout << MakeSound(soundType) << endl;
+
+    // Method 2
+    cout << "Method 2:" << endl;
+    SoundFunction soundFunction = nullptr;
+
+    soundFunction = Bark;
+    cout << soundFunction() << endl;
+    soundFunction = Meow;
+    cout << soundFunction() << endl;
+    soundFunction = Moo;
+    cout << soundFunction() << endl;
+    soundFunction = Yip;
+    cout << soundFunction() << endl;
+
+    cout << "Method 3:" << endl;
+    Animal* animal = nullptr;
+
+    animal = new Dog;
+    cout << animal->Sound() << endl;
+    animal = new Cat;
+    cout << animal->Sound() << endl;
+    animal = new Cow;
+    cout << animal->Sound() << endl;
+    animal = new Fox;
+    cout << animal->Sound() << endl;
+}
+
 int main()
+{
+    //StaticExamples();
+    //Inhertiance();
+    Polymorphism();
+
+    return 0;
+}
+
+void Inhertiance()
 {
     Grasshopper gary;
     gary.name = "Gary";
@@ -85,10 +231,6 @@ int main()
 
     gary.Name();
     barry.Name();
-
-    //StaticExamples();
-
-    return 0;
 }
 
 // Function definition
@@ -131,6 +273,27 @@ void StaticExamples()
     cout << "Player 2 health: " << player2.health << endl;
     cout << "Player 3 health: " << player3.health << endl;
     cout << "Player 4 health: " << player4.health << endl;
+}
+
+// Additional function pointer examples:
+using Ex1 = void(*)();  // Ex1 is a pointer to a function that returns void and takes no arguments
+using Ex2 = int(*)();   // Ex2 is a pointer to a function that returns int and takes no arguments
+using Ex3 = float(*)(); // Ex3 is a pointer to a function that returns float and takes no arguments
+using Ex4 = void(*)(int, float);
+// Ex4 is a pointer to a function that returns void and takes an int followed by a float as arguments
+
+void Example4(int a, float b)
+{
+    cout << a << b << "<-- output from function pointer example 4!" << endl;
+}
+
+void FunctionPointerExample()
+{
+    // This is a "delegate" in C#
+    Ex4 exampleFunctionPtr = Example4;
+
+    // We can store a function like any other variable, and then invoke it at our convenience!
+    exampleFunctionPtr(1, 1.f);
 }
 
 //const int screenWidth = 1280;
