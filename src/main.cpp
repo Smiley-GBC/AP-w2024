@@ -60,11 +60,12 @@ using DrawShape = void(*)();
 
 struct Shape
 {
+public:
 	virtual void Draw() = 0;
 
 	unsigned int vertexCount;
-	float area;
 	float length;
+	float area;
 };
 
 struct Circle : public Shape
@@ -78,6 +79,15 @@ struct Circle : public Shape
 		cout << " ##### " << endl;
 	}
 };
+
+// Cannot override Draw any further since its declared "final" (last override) in circle
+//struct Oval : public Circle
+//{
+//	void Draw() override
+//	{
+//
+//	}
+//};
 
 struct Rectangle : public Shape
 {
@@ -108,13 +118,15 @@ void DrawManuallyOOP()
 
 	shape = new Circle;
 	shape->Draw();
-	//(*shape).Draw(); //The same as shape->Draw()
+	delete shape;
 
 	shape = new Rectangle;
 	shape->Draw();
+	delete shape;
 
 	shape = new Triangle;
 	shape->Draw();
+	delete shape;
 }
 
 void DrawAutomaticallyOOP()
@@ -177,51 +189,15 @@ void DrawAutomaticallyFP()
 	}
 }
 
-using DecimalMath = float(*)(float, float);
-// Integer version of the above
-//using IntegerMath = int(*)(int, int);
-
-float Add(float a, float b) {
-	return a + b;
-}
-
-float Sub(float a, float b) {
-	return a - b;
-}
-
-float Mul(float a, float b) {
-	return a * b;
-}
-
-float Div(float a, float b) {
-	return a / b;
-}
-
 int main()
 {
-	float a = 1.0f;
-	float b = 2.0f;
-
-	// Pointer to a function, so if we don't want any function, we can use nullptr!
-	DecimalMath dm = nullptr;
-
-	dm = Add;
-	cout << dm(a, b) << endl;
-
-	dm = Sub;
-	cout << dm(a, b) << endl;
-
-	dm = Mul;
-	cout << dm(a, b) << endl;
-
-	dm = Div;
-	cout << dm(a, b) << endl;
-
 	cout << "Drawing manually. " << endl;
-	DrawManuallyFP();
+	//DrawManuallyFP();
+	DrawManuallyOOP();
 	
 	cout << "Drawing Automatically" << endl;
-	DrawAutomaticallyFP();
+	//DrawAutomaticallyFP();
+	DrawAutomaticallyOOP();
 
 	return 0;
 }
