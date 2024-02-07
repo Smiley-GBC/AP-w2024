@@ -1,203 +1,160 @@
 //#include <raylib.h>
 #include <Math.h>
 #include <iostream>
+#include <string>
 using namespace std;
 
-// structs are "coppied" by default in C#
-//struct
-
-// classes are "referenced" by default in C#
-//class
-
-struct Test
+// "Old-school" polymorphism
+enum MathType
 {
-	int data;
+	ADD,
+	SUB,
+	MUL,
+	DIV
 };
 
-// Passed by pointer
-// If we do this we can change our memory address which causes problems...
-// Hence, its generally more safe to pass by reference!
-//(*test).data; // same as "->"
-//void Change1(Test* test)
-//{
-//	test++;
-//	cout << test->data << endl;
-//}
-
-// Passed by reference
-// References work as "automatically dereferenced pointers" internally
-//void Change2(Test& test)
-//{
-//	cout << test.data << endl;
-//}
-
-// Adding "const" AFTER the pointer makes its address constant
-//void Change3(Test* const test)
-//{
-//	// Doesn't compile
-//	test++;
-//}
-
-// Adding "const" BEFORE the pointer makes its value constant
-//void Change4(const Test* test)
-//{
-//	// Doesn't compile
-//	test->data++;
-//}
-
-void Change5(const Test* const test)
+float MathOperation(float a, float b, MathType type)
 {
-	cout << test->data << endl;
-}
-
-void Change6(const Test& test)
-{
-	cout << test.data << endl;
-}
-
-//Pointer to a function that returns void and takes no arguments
-using DrawShape = void(*)();
-
-struct Shape
-{
-public:
-	virtual void Draw() = 0;
-
-	unsigned int vertexCount;
-	float length;
-	float area;
-};
-
-struct Circle : public Shape
-{
-	void Draw() final
+	switch (type)
 	{
-		cout << " #####" << endl;
-		cout << "#     #" << endl;
-		cout << "#     #" << endl;
-		cout << "#     #" << endl;
-		cout << " ##### " << endl;
+	case ADD:
+		return a + b;
+
+	case SUB:
+		return a - b;
+
+	case MUL:
+		return a * b;
+
+	case DIV:
+		return a / b;
+	}
+}
+
+// Function pointers (or "delegates" in C#)
+using DecimalMath = float(*)(float, float);
+// Integer version of the above
+//using IntegerMath = int(*)(int, int);
+
+float Add(float a, float b) {
+	return a + b;
+}
+
+float Sub(float a, float b) {
+	return a - b;
+}
+
+float Mul(float a, float b) {
+	return a * b;
+}
+
+float Div(float a, float b) {
+	return a / b;
+}
+
+struct Character
+{
+	virtual string Name() = 0;
+};
+
+struct Edwin : public Character
+{
+	string Name() final
+	{
+		return "Edwin";
 	}
 };
 
-// Cannot override Draw any further since its declared "final" (last override) in circle
-//struct Oval : public Circle
-//{
-//	void Draw() override
-//	{
-//
-//	}
-//};
-
-struct Rectangle : public Shape
+// Virtual methods (method overriding, object-oriented style)
+struct MathOp
 {
-	void Draw() final
+	// = 0 means "pure-virtual" function. *Forces* the derived class to override said method!
+	virtual float Operation(float a, float b) = 0;
+};
+
+struct AddOp : public MathOp
+{
+	float Operation(float a, float b) final
 	{
-		cout << "########" << endl;
-		cout << "#      #" << endl;
-		cout << "#      #" << endl;
-		cout << "#      #" << endl;
-		cout << "########" << endl;
+		return a + b;
 	}
 };
 
-struct Triangle : public Shape
+struct SubOp : public MathOp
 {
-	void Draw() final
+	float Operation(float a, float b) final
 	{
-		cout << "    #   " << endl;
-		cout << "  #  #  " << endl;
-		cout << "#      #" << endl;
-		cout << "########" << endl;
+		return a - b;
 	}
 };
 
-void DrawManuallyOOP()
+struct MulOp : public MathOp
 {
-	Shape* shape = nullptr;
-
-	shape = new Circle;
-	shape->Draw();
-	delete shape;
-
-	shape = new Rectangle;
-	shape->Draw();
-	delete shape;
-
-	shape = new Triangle;
-	shape->Draw();
-	delete shape;
-}
-
-void DrawAutomaticallyOOP()
-{
-	Shape* shape[] = { new Circle, new Rectangle, new Triangle };
-
-	for (int i = 0; i < 3; i++)
+	float Operation(float a, float b) final
 	{
-		shape[i]->Draw();
-		delete shape[i];
+		return a * b;
 	}
-}
+};
 
-void DrawCircle()
+struct DivOp : public MathOp
 {
-	cout << " #####" << endl;
-	cout << "#     #" << endl;
-	cout << "#     #" << endl;
-	cout << "#     #" << endl;
-	cout << " ##### " << endl;
-}
-
-void DrawRectangle()
-{
-	cout << "########" << endl;
-	cout << "#      #" << endl;
-	cout << "#      #" << endl;
-	cout << "#      #" << endl;
-	cout << "########" << endl;
-}
-
-void DrawTriangle()
-{
-	cout << "    #   " << endl;
-	cout << "  #  #  " << endl;
-	cout << "#      #" << endl;
-	cout << "########" << endl;
-}
-
-void DrawManuallyFP()
-{
-	DrawShape drawShape = nullptr;
-
-	drawShape = DrawCircle;
-	drawShape();
-
-	drawShape = DrawRectangle;
-	drawShape();
-
-	drawShape = DrawTriangle;
-	drawShape();
-}
-
-void DrawAutomaticallyFP()
-{
-	DrawShape shapes[] = { DrawCircle, DrawRectangle, DrawTriangle };
-
-	for (int i = 0; i < 3; i++) {
-		shapes[i]();
+	float Operation(float a, float b) final
+	{
+		return a / b;
 	}
-}
+};
 
 int main()
 {
-	cout << "Drawing manually. " << endl;
-	//DrawManuallyFP();
-	DrawManuallyOOP();
-	
-	cout << "Drawing Automatically" << endl;
-	//DrawAutomaticallyFP();
-	DrawAutomaticallyOOP();
+	Character* edwin = new Edwin;
+
+	float a = 1.0f;
+	float b = 2.0f;
+
+	// Method 1 -- old school
+	MathType mathType;
+
+	mathType = ADD;
+	cout << MathOperation(a, b, mathType) << endl;
+
+	mathType = SUB;
+	cout << MathOperation(a, b, mathType) << endl;
+
+	mathType = MUL;
+	cout << MathOperation(a, b, mathType) << endl;
+
+	mathType = DIV;
+	cout << MathOperation(a, b, mathType) << endl;
+
+	// Method 2 -- function pointers
+	DecimalMath dm = nullptr;
+
+	dm = Add;
+	cout << endl << dm(a, b) << endl;
+
+	dm = Sub;
+	cout << dm(a, b) << endl;
+
+	dm = Mul;
+	cout << dm(a, b) << endl;
+
+	dm = Div;
+	cout << dm(a, b) << endl;
+
+	// Method 3 -- virtual methods (OOP)
+	MathOp* op = nullptr;
+
+	op = new AddOp;
+	cout << endl << op->Operation(a, b) << endl;
+
+	op = new SubOp;
+	cout << op->Operation(a, b) << endl;
+
+	op = new MulOp;
+	cout << op->Operation(a, b) << endl;
+
+	op = new DivOp;
+	cout << op->Operation(a, b) << endl;
 
 	return 0;
 }
