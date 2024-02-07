@@ -58,14 +58,6 @@ void Change6(const Test& test)
 //Pointer to a function that returns void and takes no arguments
 using DrawShape = void(*)();
 
-//int Add(int i, int i2){
-//	return i + i2;
-//}
-//
-//int Add(float i, float i2) {
-//	return i + i2;
-//}
-
 struct Shape
 {
 	virtual void Draw() = 0;
@@ -185,8 +177,46 @@ void DrawAutomaticallyFP()
 	}
 }
 
+using DecimalMath = float(*)(float, float);
+// Integer version of the above
+//using IntegerMath = int(*)(int, int);
+
+float Add(float a, float b) {
+	return a + b;
+}
+
+float Sub(float a, float b) {
+	return a - b;
+}
+
+float Mul(float a, float b) {
+	return a * b;
+}
+
+float Div(float a, float b) {
+	return a / b;
+}
+
 int main()
 {
+	float a = 1.0f;
+	float b = 2.0f;
+
+	// Pointer to a function, so if we don't want any function, we can use nullptr!
+	DecimalMath dm = nullptr;
+
+	dm = Add;
+	cout << dm(a, b) << endl;
+
+	dm = Sub;
+	cout << dm(a, b) << endl;
+
+	dm = Mul;
+	cout << dm(a, b) << endl;
+
+	dm = Div;
+	cout << dm(a, b) << endl;
+
 	cout << "Drawing manually. " << endl;
 	DrawManuallyFP();
 	
