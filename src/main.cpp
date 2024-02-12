@@ -22,10 +22,11 @@ T Add(T a, T b)
     return a + b;
 }
 
+template<typename T>
 class Array
 {
 public:
-    void Add(int value)
+    void Add(T value)
     {
         if (count < capacity)
         {
@@ -36,7 +37,7 @@ public:
         else
         {
             // Otherwise, double the space, copy old values and delete old storage
-            int* newData = new int[(count + 1) * 2];
+            T* newData = new T[(count + 1) * 2];
             for (int i = 0; i < count; i++)
             {
                 newData[i] = data[i];
@@ -50,12 +51,12 @@ public:
         }
     }
 
-    int Get(int index)
+    T Get(int index)
     {
         return GetHelper(index);
     }
 
-    int operator[](int index)
+    T operator[](int index)
     {
         return GetHelper(index);
     }
@@ -63,11 +64,11 @@ public:
     int Count() { return count; }
 
 private:
-    int* data = nullptr;
+    T* data = nullptr;
     int count = 0;      // number of elements in array
     int capacity = 0;   // space for available elements
 
-    int GetHelper(int index)
+    T GetHelper(int index)
     {
         // Ensure positive & less than number of elements in our array
         assert(index >= 0 && index < count);
@@ -81,15 +82,22 @@ private:
 
 int main()
 {
-    Array arr;
-    arr.Add(1);
-    arr.Add(2);
-    arr.Add(3);
-    arr.Add(4);
+    Array<int> intArray;
+    intArray.Add(1);
+    intArray.Add(2);
+    intArray.Add(3);
+    intArray.Add(4);
 
-    for (int i = 0; i < arr.Count(); i++)
+    Array<float> floatArray;
+    floatArray.Add(4.4f);
+    floatArray.Add(3.3f);
+    floatArray.Add(2.2f);
+    floatArray.Add(1.1f);
+
+    for (int i = 0; i < intArray.Count(); i++)
     {
-        cout << arr[i] << endl;
+        cout << intArray[i] << endl;
+        cout << floatArray[i] << endl;
     }
 
     return 0;
