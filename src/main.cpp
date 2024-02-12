@@ -52,13 +52,12 @@ public:
 
     int Get(int index)
     {
-        // Ensure positive & less than number of elements in our array
-        assert(index >= 0 && index < count);
+        return GetHelper(index);
+    }
 
-        // Ensure we have more than 0 elements in our array!
-        assert(count > 0);
-
-        return data[index];
+    int operator[](int index)
+    {
+        return GetHelper(index);
     }
 
     int Count() { return count; }
@@ -67,6 +66,17 @@ private:
     int* data = nullptr;
     int count = 0;      // number of elements in array
     int capacity = 0;   // space for available elements
+
+    int GetHelper(int index)
+    {
+        // Ensure positive & less than number of elements in our array
+        assert(index >= 0 && index < count);
+
+        // Ensure we have more than 0 elements in our array!
+        assert(count > 0);
+
+        return data[index];
+    }
 };
 
 int main()
@@ -79,7 +89,7 @@ int main()
 
     for (int i = 0; i < arr.Count(); i++)
     {
-        cout << arr.Get(i) << endl;
+        cout << arr[i] << endl;
     }
 
     return 0;
