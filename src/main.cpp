@@ -99,6 +99,11 @@ vec2<T> operator+(vec2<T> a, vec2<T> b)
 
 int main()
 {
+    // Compiler error because vec2 needs x & y members but Test only has a value member
+    //vec2<Test> t1;
+    //vec2<Test> t2;
+    //vec2<Test> t3 = t1 + t2;
+
     //Vec2 a{ 1.5f, 2.5f };
     //Vec2 b{ 3.5f, 4.5f };
     //Vec2 c = a + b;
