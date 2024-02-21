@@ -24,15 +24,26 @@ int main()
     InitAudioDevice();
     SetTargetFPS(60);
 
+    bool musicPlaying = false;
     Music music = LoadMusicStream("./assets/audio/ncs_time_leap_aero_chord.mp3");
-    PlayMusicStream(music);
     
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_SPACE))
+        {
+            // TODO -- stop track from restarting every time
+            // Add pause & resume functionality
+            musicPlaying = !musicPlaying;
+            if (musicPlaying)
+                PlayMusicStream(music);
+            else
+                StopMusicStream(music);
+        }
         UpdateMusicStream(music);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+
         EndDrawing();
     }
     
