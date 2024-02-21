@@ -23,14 +23,20 @@ int main()
     InitWindow(screenWidth, screenHeight, "Resource Manager");
     InitAudioDevice();
     SetTargetFPS(60);
+
+    Music music = LoadMusicStream("./assets/audio/ncs_time_leap_aero_chord.mp3");
+    PlayMusicStream(music);
     
     while (!WindowShouldClose())
     {
+        UpdateMusicStream(music);
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
         EndDrawing();
     }
     
+    UnloadMusicStream(music);
     CloseAudioDevice();
     CloseWindow();
 }
