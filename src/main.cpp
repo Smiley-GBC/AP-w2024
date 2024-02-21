@@ -26,9 +26,22 @@ int main()
 
     bool musicPlaying = false;
     Music music = LoadMusicStream("./assets/audio/ncs_time_leap_aero_chord.mp3");
+
+    Sound headshot = LoadSound("./assets/audio/headshot.mp3");
+    Sound ownage = LoadSound("./assets/audio/ownage.mp3");
+    Sound doublekill = LoadSound("./assets/audio/doublekill.mp3");
     
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_ONE))
+            PlaySound(headshot);
+
+        if (IsKeyPressed(KEY_TWO))
+            PlaySound(ownage);
+
+        if (IsKeyPressed(KEY_THREE))
+            PlaySound(doublekill);
+
         if (IsKeyPressed(KEY_SPACE))
         {
             // TODO -- stop track from restarting every time
@@ -47,6 +60,10 @@ int main()
         EndDrawing();
     }
     
+    UnloadSound(doublekill);
+    UnloadSound(ownage);
+    UnloadSound(headshot);
+
     UnloadMusicStream(music);
     CloseAudioDevice();
     CloseWindow();
