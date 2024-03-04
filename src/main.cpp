@@ -142,19 +142,76 @@ void MultipleWeaponIO()
 	}
 }
 
-int main()
+void SimpleBinaryIO()
 {
+	// Binary output
 	int outNumbers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	ofstream outFile;
-	outFile.open("Binary Test.bin", ios::binary | ios::out | ios::trunc);
+	outFile.open("Numbers.bin", ios::binary | ios::out | ios::trunc);
 	outFile.write((char*)outNumbers, 10 * sizeof(int));
 	outFile.close();
 
+	// Binary input
 	int inNumbers[10];
 	ifstream inFile;
-	inFile.open("Binary Test.bin", ios::binary | ios::in);
+	inFile.open("Numbers.bin", ios::binary | ios::in);
 	inFile.read((char*)inNumbers, 10 * sizeof(int));
 	inFile.close();
 
+	// Sets the contents of inNumbers to be 0
+	memset(inNumbers, 0, 10 * sizeof(int));
+
+	// Text output
+	outFile.open("Numbers.txt");
+	for (int i = 0; i < 10; i++)
+		outFile << outNumbers[i] << endl;
+	outFile.close();
+
+	// Text input
+	inFile.open("Numbers.txt");
+	for (int i = 0; i < 10; i++)
+		inFile >> inNumbers[i];
+	inFile.close();
+}
+
+// Binary files are convenient when data types are all primitive (int, float, bool, etc)
+// but more involved when they contain *variable-length* information such strings
+struct BinaryWeapon
+{
+	int damage;
+	int type;
+	float range;
+	float weight;
+};
+
+void BinaryObjectIO()
+{
+	BinaryWeapon outWeapon, inWeapon;
+	outWeapon.damage = 9999;
+	outWeapon.type = 420;
+	outWeapon.range = 10.0f;
+	outWeapon.weight = 25.0f;
+
+	// Binary output
+	ofstream outFile;
+	outFile.open("Weapon.bin", ios::binary | ios::out | ios::trunc);
+	outFile.write((char*)&outWeapon, sizeof(Weapon));
+	outFile.close();
+
+	// Binary input
+	ifstream inFile;
+	inFile.open("Weapon.bin", ios::binary | ios::in);
+	inFile.read((char*)&inWeapon, sizeof(Weapon));
+	inFile.close();
+}
+
+int main()
+{
+	// Uncomment your file demo of choice!
+	//SimpleFileIO();
+	//SingleWeaponIO();
+	//MultipleWeaponIO();
+	//SimpleBinaryIO();
+	//BinaryObjectIO();
 	return 0;
 }
