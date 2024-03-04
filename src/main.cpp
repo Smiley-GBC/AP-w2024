@@ -1,74 +1,33 @@
 #include "raylib.h"
 #include "Math.h"
-#include "AudioManager.h"
+#include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-    InitWindow(screenWidth, screenHeight, "Resource Manager");
-    InitAudioDevice();
-    SetTargetFPS(60);
+	const char* filePath = "File Test.txt";
 
-    AudioManager audioManager;
+	// Two types of c++ file streams -- ifstream (input), and ofstream (output)
+	ofstream outFile;
+	outFile.open(filePath);
+	outFile << "Top secret information" << endl;
+	outFile.close();
+	//remove("File Test.txt");
 
-    bool musicPlaying = false;
-    Music music = LoadMusicStream("./assets/audio/ncs_time_leap_aero_chord.mp3");
+	ifstream inFile;
+	inFile.open(filePath);
+	string fileContents;
 
-    Sound headshot = audioManager.LoadSound("./assets/audio/headshot.mp3");
-    audioManager.LoadSound("./assets/audio/headshot.mp3");
-    audioManager.LoadSound("./assets/audio/headshot.mp3");
-    // Test our sound caching by stepping through the program to see which branch it takes!
+	// Stream extraction operator stops whenever it encounters a "delimiter"
+	//inFile >> fileContents;
 
-    Sound ownage = audioManager.LoadSound("./assets/audio/ownage.mp3");
-    Sound doublekill = audioManager.LoadSound("./assets/audio/doublekill.mp3");
-    SetSoundVolume(ownage, 0.5f);
-    SetSoundVolume(doublekill, 0.25f);
+	// We have to use getline if we'd like to read a file line-by-line!
+	getline(inFile, fileContents);
 
-    Texture enterprise = LoadTexture("./assets/textures/enterprise.png");
-    Texture d7 = LoadTexture("./assets/textures/d7.png");
+	inFile.close();
+	cout << fileContents;
 
-    bool isD7 = false;
-    while (!WindowShouldClose())
-    {
-        if (IsKeyPressed(KEY_ONE))
-            PlaySound(headshot);
-
-        if (IsKeyPressed(KEY_TWO))
-            PlaySound(ownage);
-
-        if (IsKeyPressed(KEY_THREE))
-            PlaySound(doublekill);
-
-        if (IsKeyPressed(KEY_TAB))
-            isD7 = !isD7;
-
-        if (IsKeyPressed(KEY_SPACE))
-        {
-            // TODO -- stop track from restarting every time
-            // Add pause & resume functionality
-            musicPlaying = !musicPlaying;
-            if (musicPlaying)
-                PlayMusicStream(music);
-            else
-                StopMusicStream(music);
-        }
-        UpdateMusicStream(music);
-
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawTexture(isD7 ? d7 : enterprise, 10, 10, WHITE);
-        EndDrawing();
-    }
-    
-    UnloadTexture(d7);
-    UnloadTexture(enterprise);
-    UnloadSound(doublekill);
-    UnloadSound(ownage);
-    UnloadSound(headshot);
-
-    UnloadMusicStream(music);
-    CloseAudioDevice();
-    CloseWindow();
+	return 0;
 }
