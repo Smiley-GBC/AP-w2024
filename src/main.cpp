@@ -94,7 +94,7 @@ void LoadWeapon(Weapon& weapon, ifstream& inFile)
 	getline(inFile, weapon.description);
 }
 
-int main()
+void MultipleWeaponIO()
 {
 	array<Weapon, 3> outWeapons;
 	outWeapons[0].description = "The mighty excalibur";
@@ -113,11 +113,14 @@ int main()
 	outWeapons[2].damage = 1234;
 	outWeapons[2].type = 3;
 	outWeapons[2].range = 1000.0f;
-	outWeapons[2].weight = 250.0f; 
+	outWeapons[2].weight = 250.0f;
 
+	// ofstream files are truncated (erased) by default.
+	// If you'd like to change this, pass the ios::app flag.
+	// Its generally easier if you don't allow file appending as it makes logic more complex.
 	const char* filePath = "Weapons.txt";
 	ofstream outFile;
-	outFile.open(filePath);
+	outFile.open(filePath/*, ios::app*/);
 
 	// Save the amount of weapons before we save the weapons themselves
 	// (so we know how many weapons to load)
@@ -137,6 +140,21 @@ int main()
 		LoadWeapon(inWeapons[i], inFile);
 		inWeapons[i].Print();
 	}
+}
+
+int main()
+{
+	int outNumbers[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	ofstream outFile;
+	outFile.open("Binary Test.bin", ios::binary | ios::out | ios::trunc);
+	outFile.write((char*)outNumbers, 10 * sizeof(int));
+	outFile.close();
+
+	int inNumbers[10];
+	ifstream inFile;
+	inFile.open("Binary Test.bin", ios::binary | ios::in);
+	inFile.read((char*)inNumbers, 10 * sizeof(int));
+	inFile.close();
 
 	return 0;
 }
