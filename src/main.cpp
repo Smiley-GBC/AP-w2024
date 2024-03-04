@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <array>
+#include <vector>
 using namespace std;
 
 void SimpleFileIO()
@@ -37,9 +39,19 @@ struct Weapon
 	int type;
 	float range;
 	float weight;
+
+	void Print()
+	{
+		cout
+			<< description << ' '
+			<< type << ' '
+			<< damage << ' '
+			<< range << ' '
+			<< weight << endl;
+	}
 };
 
-int main()
+void SingleWeaponIO()
 {
 	Weapon outWeapon, inWeapon;
 	outWeapon.description = "The mighty excalibur";
@@ -48,7 +60,7 @@ int main()
 	outWeapon.range = 10.0f;
 	outWeapon.weight = 25.0f;
 
-	const char* filePath = "Weapons.txt";
+	const char* filePath = "Weapon.txt";
 	ofstream outFile;
 	outFile.open(filePath);
 	outFile
@@ -64,6 +76,67 @@ int main()
 	inFile >> inWeapon.type >> inWeapon.damage >> inWeapon.range >> inWeapon.weight;
 	getline(inFile, inWeapon.description);
 	inFile.close();
+}
+
+void SaveWeapon(const Weapon& weapon, ofstream& outFile)
+{
+	outFile
+		<< weapon.type << ' '
+		<< weapon.damage << ' '
+		<< weapon.range << ' '
+		<< weapon.weight << ' '
+		<< weapon.description << endl;
+}
+
+void LoadWeapon(Weapon& weapon, ifstream& inFile)
+{
+	inFile >> weapon.type >> weapon.damage >> weapon.range >> weapon.weight;
+	getline(inFile, weapon.description);
+}
+
+int main()
+{
+	array<Weapon, 3> outWeapons;
+	outWeapons[0].description = "The mighty excalibur";
+	outWeapons[0].damage = 9999;
+	outWeapons[0].type = 420;
+	outWeapons[0].range = 10.0f;
+	outWeapons[0].weight = 25.0f;
+
+	outWeapons[1].description = "The almost mighty excalipur";
+	outWeapons[1].damage = 6666;
+	outWeapons[1].type = 2;
+	outWeapons[1].range = 100.0f;
+	outWeapons[1].weight = 5.0f;
+
+	outWeapons[2].description = "Magic Dave the epic stick";
+	outWeapons[2].damage = 1234;
+	outWeapons[2].type = 3;
+	outWeapons[2].range = 1000.0f;
+	outWeapons[2].weight = 250.0f; 
+
+	const char* filePath = "Weapons.txt";
+	ofstream outFile;
+	outFile.open(filePath);
+
+	// Save the amount of weapons before we save the weapons themselves
+	// (so we know how many weapons to load)
+	outFile << outWeapons.size() << endl;
+	for (int i = 0; i < outWeapons.size(); i++)
+		SaveWeapon(outWeapons[i], outFile);
+	outFile.close();
+
+	int weaponCount = 0;
+	vector<Weapon> inWeapons;
+	ifstream inFile;
+	inFile.open(filePath);
+	inFile >> weaponCount;
+	inWeapons.resize(weaponCount);
+	for (int i = 0; i < weaponCount; i++)
+	{
+		LoadWeapon(inWeapons[i], inFile);
+		inWeapons[i].Print();
+	}
 
 	return 0;
 }

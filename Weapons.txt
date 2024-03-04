@@ -1,1 +1,4 @@
+3
 420 9999 10 25 The mighty excalibur
+2 6666 100 5 The almost mighty excalipur
+3 1234 1000 250 Magic Dave the epic stick
