@@ -19,6 +19,15 @@ Color RandomColor()
     return colors[rand() % 3];  // random number between 0, 1 and 2
 }
 
+enum TileType
+{
+    GRASS,
+    WATER,
+    MUD,
+    STONE,
+    COUNT
+};
+
 int main()
 {
     const int screenWidth = 800;
@@ -26,18 +35,19 @@ int main()
     InitWindow(screenWidth, screenHeight, "Tile Map");
     SetTargetFPS(60);
 
+    Color tileColors[COUNT]{ GREEN, BLUE, BROWN, DARKGRAY };
     int grid[TILE_COUNT][TILE_COUNT]
     {
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+        { 3, 1, 1, 1, 1, 1, 1, 1, 1, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+        { 3, 2, 2, 2, 2, 2, 2, 2, 2, 3 }
     };
 
     array<array<Tile, TILE_COUNT>, TILE_COUNT> tiles;
@@ -59,7 +69,7 @@ int main()
         {
             for (size_t col = 0; col < TILE_COUNT; col++)
             {
-                Color color = grid[row][col] == 1 ? WHITE : BLACK;
+                Color color = tileColors[grid[row][col]];
                 DrawRectangleV(tiles[row][col].position, { TILE_WIDTH, TILE_HEIGHT }, color);
             }
         }
