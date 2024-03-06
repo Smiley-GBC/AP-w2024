@@ -44,16 +44,42 @@ vector<Cell> Neighbours(Cell cell, int rows, int cols)
     return neighbours;
 }
 
-vector<Cell> FloodFill(Cell start, int rows, int cols)
+vector<Cell> FloodFill(Cell start, int stepCount)
 {
     vector<Cell> cells;
-    //for (int row = 0; row < rows; row++)
-    //{
-    //    for (int col = 0; col < cols; col++)
-    //    {
-    //
-    //    }
-    //}
+    queue<Cell> frontier; // "open list"
+    bool visited[TILE_COUNT][TILE_COUNT]; // "closed list"
+    frontier.push(start);
+
+    for (int row = 0; row < TILE_COUNT; row++)
+    {
+        for (int col = 0; col < TILE_COUNT; col++)
+        {
+            visited[row][col] = false;
+        }
+    }
+
+    for (int i = 0; i < stepCount; i++)
+    {
+        // Exit if there's nothing left to explore
+        if (frontier.empty()) break;
+
+        Cell current = frontier.front();    // Get next in line
+        frontier.pop();                     // Remove from line
+        visited[current.row][current.col] = true;   // Mark as visited
+        cells.push_back(current);
+
+        // "Range-based for-loop" -- identical to "foreach" in C#
+        // Basically does this Cell neighbour = neighbours[i]; automatically
+        for (Cell neighbour : Neighbours(current, TILE_COUNT, TILE_COUNT))
+        {
+            if (!visited[neighbour.row][neighbour.col])
+            {
+                frontier.push(neighbour);
+            }
+        }
+    }
+    
     return cells;
 }
 
@@ -79,8 +105,11 @@ int main()
         { 3, 2, 2, 2, 2, 2, 2, 2, 2, 3 }
     };
 
+    int stepCount = 0;
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_SPACE)) ++stepCount;
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
@@ -94,10 +123,11 @@ int main()
             }
         }
 
-        vector<Cell> neighbours = Neighbours({ 4, 4 }, TILE_COUNT, TILE_COUNT);
-        for (size_t i = 0; i < neighbours.size(); i++)
+        //vector<Cell> neighbours = Neighbours({ 4, 4 }, TILE_COUNT, TILE_COUNT);
+        vector<Cell> cells = FloodFill({ 4, 4 }, stepCount);
+        for (size_t i = 0; i < cells.size(); i++)
         {
-            Cell neighbour = neighbours[i];
+            Cell neighbour = cells[i];
             Vector2 position = Vector2{ neighbour.col * TILE_WIDTH, neighbour.row * TILE_HEIGHT };
             DrawRectangleV(position, { TILE_WIDTH, TILE_HEIGHT }, PURPLE);
         }
