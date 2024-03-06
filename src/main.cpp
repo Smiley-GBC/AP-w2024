@@ -3,9 +3,9 @@
 #include <array>
 using namespace std;
 
-const float TILE_WIDTH = 40.0f;
-const float TILE_HEIGHT = 40.0f;
-const size_t TILE_COUNT = 20;
+const float TILE_WIDTH = 80.0f;
+const float TILE_HEIGHT = 80.0f;
+const size_t TILE_COUNT = 10;
 
 struct Tile
 {
@@ -26,6 +26,20 @@ int main()
     InitWindow(screenWidth, screenHeight, "Tile Map");
     SetTargetFPS(60);
 
+    int grid[TILE_COUNT][TILE_COUNT]
+    {
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+    };
+
     array<array<Tile, TILE_COUNT>, TILE_COUNT> tiles;
     for (size_t row = 0; row < TILE_COUNT; row++)
     {
@@ -45,7 +59,8 @@ int main()
         {
             for (size_t col = 0; col < TILE_COUNT; col++)
             {
-                DrawRectangleV(tiles[row][col].position, { TILE_WIDTH, TILE_HEIGHT }, tiles[row][col].color);
+                Color color = grid[row][col] == 1 ? WHITE : BLACK;
+                DrawRectangleV(tiles[row][col].position, { TILE_WIDTH, TILE_HEIGHT }, color);
             }
         }
 
