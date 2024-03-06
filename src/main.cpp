@@ -20,6 +20,22 @@ struct Cell
     int col;    // x
 };
 
+struct Node
+{
+    Cell cell;      // current
+    Cell parent;    // previous
+};
+
+Cell Invalid()
+{
+    return { -1, -1 };
+}
+
+bool operator==(const Cell& a, const Cell& b)
+{
+    return a.row == b.row && a.col == b.col;
+}
+
 enum TileType
 {
     GRASS,
@@ -44,22 +60,26 @@ vector<Cell> Neighbours(Cell cell, int rows, int cols)
     return neighbours;
 }
 
-vector<Cell> FloodFill(Cell start, int tiles[TILE_COUNT][TILE_COUNT], int stepCount)
+vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT], int stepCount)
 {
     vector<Cell> cells;
     queue<Cell> frontier; // "open list"
     bool visited[TILE_COUNT][TILE_COUNT]; // "closed list"
     frontier.push(start);
 
+    Node nodes[TILE_COUNT][TILE_COUNT];
     for (int row = 0; row < TILE_COUNT; row++)
     {
         for (int col = 0; col < TILE_COUNT; col++)
         {
             // Allowed to explore if not stone
             visited[row][col] = tiles[row][col] == STONE;
+            nodes[row][col].cell = { row, col };
+            nodes[row][col].parent = Invalid();
         }
     }
 
+    bool found = false;
     for (int i = 0; i < stepCount; i++)
     {
         // Exit if there's nothing left to explore
@@ -67,6 +87,13 @@ vector<Cell> FloodFill(Cell start, int tiles[TILE_COUNT][TILE_COUNT], int stepCo
 
         Cell current = frontier.front();    // Get next in line
         frontier.pop();                     // Remove from line
+
+        if (current == goal)
+        {
+            found = true;
+            break;
+        }
+
         visited[current.row][current.col] = true;   // Mark as visited
         cells.push_back(current);
 
@@ -77,10 +104,30 @@ vector<Cell> FloodFill(Cell start, int tiles[TILE_COUNT][TILE_COUNT], int stepCo
             if (!visited[neighbour.row][neighbour.col])
             {
                 frontier.push(neighbour);
+                nodes[neighbour.row][neighbour.col].parent = current;
             }
         }
     }
+
+    // Retrace our steps if we've found a path
+    if (found)
+    {
+        vector<Cell> path;
+        Cell current = goal;
+        Cell next = nodes[current.row][current.col].parent;
+
+        // Retrace our steps until there's nowhere left to backtrack (parent is invalid)
+        while (next.row != -1 && next.col != -1)
+        {
+            path.push_back(current);
+            current = next;
+            next = nodes[current.row][current.col].parent;
+        }
+        reverse(path.begin(), path.end());
+        return path;
+    }
     
+    // Otherwise return all cells in flood-fill for visualization
     return cells;
 }
 
@@ -114,7 +161,7 @@ int main()
     int stepCount = 0;
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed(KEY_SPACE)) ++stepCount;
+        if (IsKeyDown(KEY_SPACE)) ++stepCount;
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -130,7 +177,7 @@ int main()
         }
 
         //vector<Cell> neighbours = Neighbours({ 4, 4 }, TILE_COUNT, TILE_COUNT);
-        vector<Cell> cells = FloodFill(start, grid, stepCount);
+        vector<Cell> cells = FloodFill(start, end, grid, stepCount);
         for (size_t i = 0; i < cells.size(); i++)
         {
             Cell neighbour = cells[i];
