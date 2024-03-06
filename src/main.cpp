@@ -44,7 +44,7 @@ vector<Cell> Neighbours(Cell cell, int rows, int cols)
     return neighbours;
 }
 
-vector<Cell> FloodFill(Cell start, int stepCount)
+vector<Cell> FloodFill(Cell start, int tiles[TILE_COUNT][TILE_COUNT], int stepCount)
 {
     vector<Cell> cells;
     queue<Cell> frontier; // "open list"
@@ -55,7 +55,8 @@ vector<Cell> FloodFill(Cell start, int stepCount)
     {
         for (int col = 0; col < TILE_COUNT; col++)
         {
-            visited[row][col] = false;
+            // Allowed to explore if not stone
+            visited[row][col] = tiles[row][col] == STONE;
         }
     }
 
@@ -93,18 +94,23 @@ int main()
     Color tileColors[COUNT]{ GREEN, BLUE, BROWN, DARKGRAY };
     int grid[TILE_COUNT][TILE_COUNT]
     {
-        { 3, 1, 1, 1, 1, 1, 1, 1, 1, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-        { 3, 2, 2, 2, 2, 2, 2, 2, 2, 3 }
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 3, 3, 3, 3, 3, 3, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 3, 2, 0 },
+        { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
+    // [6, 5]
+    // [5, 9]
 
+    Cell start, end;
+    start.row = 6; start.col = 5;
+    end.row = 5; end.col = 9;
     int stepCount = 0;
     while (!WindowShouldClose())
     {
@@ -124,7 +130,7 @@ int main()
         }
 
         //vector<Cell> neighbours = Neighbours({ 4, 4 }, TILE_COUNT, TILE_COUNT);
-        vector<Cell> cells = FloodFill({ 4, 4 }, stepCount);
+        vector<Cell> cells = FloodFill(start, grid, stepCount);
         for (size_t i = 0; i < cells.size(); i++)
         {
             Cell neighbour = cells[i];
