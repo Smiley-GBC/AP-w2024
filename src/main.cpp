@@ -37,17 +37,21 @@ int main()
 {
 	//NumberList();
 
-	Node< Vector2> p0;
-	Node< Vector2> p1;
-	Node< Vector2> p2;
-	Node< Vector2> p3;
-	p0.data = { SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f };
-	p1.data = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.2f };
-	p2.data = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f };
-	p3.data = { SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f };
-	p0.next = &p1;
-	p1.next = &p2;
-	p2.next = &p3;
+	// p = "point", r = "render"
+	Node< Vector2> p0, r0;
+	Node< Vector2> p1, r1;
+	Node< Vector2> p2, r2;
+	Node< Vector2> p3, r3;
+	p0.data = r0.data = { SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f };
+	p1.data = r1.data = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.2f };
+	p2.data = r2.data = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f };
+	p3.data = r3.data = { SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f };
+
+	// Path (p) end connects to start, whereas render (r) ends at 3
+	p0.next = &p1; r0.next = &r1;
+	p1.next = &p2; r1.next = &r2;
+	p2.next = &p3; r2.next = &r3;
+	p3.next = &p0;
 
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
@@ -56,7 +60,7 @@ int main()
 	{
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
-		Node<Vector2>* current = &p0;
+		Node<Vector2>* current = &r0;
 		while (current != nullptr)
 		{
 			DrawCircleV(current->data, r, RED);
