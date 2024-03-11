@@ -56,8 +56,24 @@ int main()
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 	float r = 20.0f;
+
+	float time = 0.0f;
+	Node<Vector2>* a = &p0;
+	Node<Vector2>* b = &p1;
 	while (!WindowShouldClose())
 	{
+		float dt = GetFrameTime();
+		time += dt;
+		Vector2 c = Lerp(a->data, b->data, time);
+
+		// Change interval if close to the destination
+		if (Distance(b->data, c) < 10.0f)
+		{
+			time = 0.0f;
+			a = b;
+			b = b->next;
+		}
+
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 		Node<Vector2>* current = &r0;
@@ -66,10 +82,7 @@ int main()
 			DrawCircleV(current->data, r, RED);
 			current = current->next;
 		}
-		//DrawCircleV(p0, r, RED);
-		//DrawCircleV(p1, r, RED);
-		//DrawCircleV(p2, r, RED);
-		//DrawCircleV(p3, r, RED);
+		DrawCircleV(c, r, BLUE);
 		EndDrawing();
 	}
 	CloseWindow();
