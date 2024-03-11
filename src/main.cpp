@@ -16,6 +16,25 @@ struct Node
 class List
 {
 public:
+
+	// Destroy list by walking it and deleting each element
+	~List()
+	{
+		Clear();
+	}
+
+	void Clear()
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			Node<int>* temp = current;
+			current = current->next;
+			delete temp;
+		}
+		head = nullptr;
+	}
+
 	void Add(int number)
 	{
 		if (head == nullptr)
@@ -81,6 +100,9 @@ void NumberList()
 	list.Add(1);
 	list.Add(2);
 	list.Add(3);
+	list.Print();
+	list.Clear();
+	list.Print();
 	list.Print();
 }
 
