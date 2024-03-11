@@ -13,7 +13,49 @@ struct Node
 	Node<T>* next = nullptr;
 };
 
-void NumberList()
+class List
+{
+public:
+	void Add(int number)
+	{
+		if (head == nullptr)
+		{
+			// Initialize our list if there's nothing in it
+			head = new Node<int>;
+			head->data = number;
+		}
+		else
+		{
+			// Loop until we find the last element
+			Node<int>* current = head;
+			while (current->next != nullptr)
+			{
+				current = current->next;
+			}
+
+			// Update the last element to point to the new node
+			Node<int>* node = new Node<int>;
+			current->next = node;
+			node->data = number;
+		}
+	}
+
+	// Print every number in our list by walking it and outputting the data of each node
+	void Print()
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			cout << current->data << endl;
+			current = current->next;
+		}
+	}
+
+private:
+	Node<int>* head = nullptr;
+};
+
+void NumberNodes()
 {
 	Node<int> head;
 	Node<int> number2, number3;
@@ -31,6 +73,15 @@ void NumberList()
 		cout << current->data << endl;
 		current = current->next;
 	}
+}
+
+void NumberList()
+{
+	List list;
+	list.Add(1);
+	list.Add(2);
+	list.Add(3);
+	list.Print();
 }
 
 void PathFollowing()
@@ -88,8 +139,9 @@ void PathFollowing()
 
 int main()
 {
-	// NumberList();
-	// PathFollowing();
+	//NumberNodes();
+	NumberList();
+	//PathFollowing();
 	
 	return 0;
 }
