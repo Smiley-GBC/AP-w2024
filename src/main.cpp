@@ -33,10 +33,8 @@ void NumberList()
 	}
 }
 
-int main()
+void PathFollowing()
 {
-	//NumberList();
-
 	// p = "point", r = "render"
 	Node< Vector2> p0, r0;
 	Node< Vector2> p1, r1;
@@ -58,8 +56,8 @@ int main()
 	float r = 20.0f;
 
 	float time = 0.0f;
-	Node<Vector2>* a = &p0;
-	Node<Vector2>* b = &p1;
+	Node<Vector2>* a = &p0;	// a = start
+	Node<Vector2>* b = &p1;	// b = end
 	while (!WindowShouldClose())
 	{
 		float dt = GetFrameTime();
@@ -86,5 +84,12 @@ int main()
 		EndDrawing();
 	}
 	CloseWindow();
+}
+
+int main()
+{
+	// NumberList();
+	// PathFollowing();
+	
 	return 0;
 }
