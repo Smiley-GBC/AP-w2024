@@ -37,6 +37,28 @@ bool operator==(const Cell& a, const Cell& b)
     return a.row == b.row && a.col == b.col;
 }
 
+float Manhattan(Cell a, Cell b)
+{
+    return abs(a.row - b.row) + abs(a.col - b.col);
+}
+
+class CompareObject
+{
+public:
+    // C++ defaults to *highest* priority *first*
+    // We want *lowest* priority *first*
+    // Hence, use > instead of < to flip the order!
+    bool operator() (const Cell& a, const Cell& b) const
+    {
+        return Manhattan(a, goal) > Manhattan(b, goal);
+    }
+
+    Cell goal;
+};
+
+// Prioritize based on distance to goal!
+using dist_queue = priority_queue<Cell, vector<Cell>, CompareObject>;
+
 enum TileType
 {
     GRASS,
@@ -64,7 +86,9 @@ vector<Cell> Neighbours(Cell cell, int rows, int cols)
 vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT], int stepCount)
 {
     vector<Cell> cells;
-    queue<Cell> frontier; // "open list"
+    CompareObject co;
+    co.goal = goal;
+    dist_queue frontier(co);
     bool visited[TILE_COUNT][TILE_COUNT]; // "closed list"
     frontier.push(start);
 
@@ -86,7 +110,7 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
         // Exit if there's nothing left to explore
         if (frontier.empty()) break;
 
-        Cell current = frontier.front();    // Get next in line
+        Cell current = frontier.top();    // Get next in line
         frontier.pop();                     // Remove from line
 
         if (current == goal)
@@ -132,40 +156,8 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
     return cells;
 }
 
-float Manhattan(Cell a, Cell b)
-{
-    return abs(a.row - b.row) + abs(a.col - b.col);
-}
-
-class CompareObject
-{
-public:
-    bool operator() (const Cell& a, const Cell& b) const
-    {
-        return Manhattan(a, goal) > Manhattan(b, goal);
-    }
-
-    Cell goal;
-};
-
-// Prioritize based on distance to goal!
-using dist_queue = priority_queue<Cell, vector<Cell>, CompareObject>;
-
 int main()
 {
-    CompareObject co;
-    co.goal = { 4, 4 };
-    dist_queue pq(co);
-    pq.push({ 1, 1 });
-    pq.push({ 2, 3 });
-    pq.push({ 3, 3 });
-
-    while (!pq.empty())
-    {
-        cout << pq.top().row << ' ' << pq.top().col << endl;
-        pq.pop();
-    }
-
     const int screenWidth = 800;
     const int screenHeight = 800;
     InitWindow(screenWidth, screenHeight, "Tile Map");
