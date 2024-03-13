@@ -132,31 +132,37 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
     return cells;
 }
 
-bool Less(int a, int b)
+float Manhattan(Cell a, Cell b)
 {
-    return a < b;
+    return abs(a.row - b.row) + abs(a.col - b.col);
 }
+
+class CompareObject
+{
+public:
+    bool operator() (const Cell& a, const Cell& b) const
+    {
+        return Manhattan(a, goal) > Manhattan(b, goal);
+    }
+
+    Cell goal;
+};
+
+// Prioritize based on distance to goal!
+using dist_queue = priority_queue<Cell, vector<Cell>, CompareObject>;
 
 int main()
 {
-    vector<int> vec;
-    vec.push_back(3);
-    vec.push_back(2);
-    vec.push_back(1);
-
-    priority_queue<int, vector<int>, greater<int>> pq;
-    pq.push(3);
-    pq.push(2);
-    pq.push(1);
-
-    for (int v : vec)
-    {
-        cout << v << endl;
-    }
+    CompareObject co;
+    co.goal = { 4, 4 };
+    dist_queue pq(co);
+    pq.push({ 1, 1 });
+    pq.push({ 2, 3 });
+    pq.push({ 3, 3 });
 
     while (!pq.empty())
     {
-        cout << pq.top() << endl;
+        cout << pq.top().row << ' ' << pq.top().col << endl;
         pq.pop();
     }
 
@@ -179,8 +185,6 @@ int main()
         { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
-    // [6, 5]
-    // [5, 9]
 
     Cell start, end;
     start.row = 6; start.col = 5;
@@ -203,7 +207,6 @@ int main()
             }
         }
 
-        //vector<Cell> neighbours = Neighbours({ 4, 4 }, TILE_COUNT, TILE_COUNT);
         vector<Cell> cells = FloodFill(start, end, grid, stepCount);
         for (size_t i = 0; i < cells.size(); i++)
         {
