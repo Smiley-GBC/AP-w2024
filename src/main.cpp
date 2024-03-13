@@ -144,8 +144,7 @@ int main()
     vec.push_back(2);
     vec.push_back(1);
 
-    //priority_queue<int, vector<int>, decltype(&Less)> pq;
-    priority_queue<int> pq;
+    priority_queue<int, vector<int>, greater<int>> pq;
     pq.push(3);
     pq.push(2);
     pq.push(1);
