@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "Math.h"
+#include <iostream>
 #include <array>
 #include <queue>
 #include <vector>
@@ -131,8 +132,35 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
     return cells;
 }
 
+bool Less(int a, int b)
+{
+    return a < b;
+}
+
 int main()
 {
+    vector<int> vec;
+    vec.push_back(3);
+    vec.push_back(2);
+    vec.push_back(1);
+
+    //priority_queue<int, vector<int>, decltype(&Less)> pq;
+    priority_queue<int> pq;
+    pq.push(3);
+    pq.push(2);
+    pq.push(1);
+
+    for (int v : vec)
+    {
+        cout << v << endl;
+    }
+
+    while (!pq.empty())
+    {
+        cout << pq.top() << endl;
+        pq.pop();
+    }
+
     const int screenWidth = 800;
     const int screenHeight = 800;
     InitWindow(screenWidth, screenHeight, "Tile Map");
