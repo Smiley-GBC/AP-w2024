@@ -2,6 +2,8 @@
 #include "Math.h"
 #include <iostream>
 #include <string>
+#include <array>
+#include <vector>
 using namespace std;
 
 constexpr int SCREEN_WIDTH = 800;
@@ -240,6 +242,14 @@ int Factorial(int n)
 	//return n == 0 ? 1 : n * Factorial(n - 1);
 }
 
+int FactorialIterative(int n)
+{
+	int fact = 1;
+	for (int i = 1; i <= n; i++)
+		fact = fact * i;
+	return fact;
+}
+
 int Fibonacci(int n)
 {
 	if (n == 0)
@@ -247,6 +257,18 @@ int Fibonacci(int n)
 	if (n == 1)
 		return 1;
 	return Fibonacci(n - 1) + Fibonacci(n - 2);
+}
+
+void FibonacciIterative(int num) {
+	// Instead of relying on recursion to compute previous 2 numbers,
+	// we simply store the previous 2 numbers in variables and update them!
+	int x = 0, y = 1, z = 0;
+	for (int i = 0; i < num; i++) {
+		cout << x << " ";
+		z = x + y;
+		x = y;
+		y = z;
+	}
 }
 
 void RecursiveNumbers()
@@ -261,12 +283,54 @@ void RecursiveNumbers()
 	printf("%i\n", Fibonacci(6));	// 8
 }
 
+int LinearSearch(int number, vector<int> numbers)
+{
+	for (int i = 0; i < numbers.size(); i++)
+	{
+		if (numbers[i] == number)
+			return i;
+	}
+}
+
+// Homework: increase numbers to 100 and step through this with the debugger
+int BinarySearch(vector<int> numbers, int low, int high, int value)
+{
+	// Base case 1 (failure): we've reached the end of our array :(
+	if (low > high)
+		return -1;
+
+	// Valid midpoint if low < mid < high
+	int mid = (low + high) / 2;
+
+	// Base case 2 (success): stop searching if we've found our number :)
+	if (numbers[mid] == value)
+		return mid;
+
+	// Recursive case 1: if our guess is too low, search higher
+	if (numbers[mid] < value)
+		return BinarySearch(numbers, mid + 1, high, value);
+	
+	// Recursive case 2: if our guess is too high, search low
+	if (numbers[mid] > value)
+		return BinarySearch(numbers, low, mid - 1, value);
+}
+
+void Searches()
+{
+	vector<int> numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	int number = 9;
+	//int position = LinearSearch(number, numbers);
+	int position = BinarySearch(numbers, 0, numbers.size() - 1, number);
+	printf("The position of %i is %i\n", number, position);
+}
+
 int main()
 {
 	//InfiniteLoop();
 	//MemoryGoofiness();
 	//printf("%i\n", CharacterCount('r',"Connor", 0));
 	//RecursiveNumbers();
+	Searches();
 
 	//NumberNodes();
 	//NumberList();
