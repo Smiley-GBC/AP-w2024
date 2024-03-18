@@ -174,8 +174,16 @@ void Count(int number)
 	}
 }
 
+void InfiniteLoop()
+{
+	printf("RUN FOR YOUR LIFE IF YOU VALUE YOUR STACK POINTER!!!\n");
+	InfiniteLoop();
+}
+
 int main()
 {
+	//InfiniteLoop();
+
 	//NumberNodes();
 	//NumberList();
 	//PathFollowing();
@@ -187,6 +195,8 @@ int main()
 
 	printf("\nRecursive count:\n");
 	Count(5);
+
+	
 	
 	return 0;
 }
