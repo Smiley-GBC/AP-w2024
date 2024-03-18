@@ -62,6 +62,17 @@ public:
 		}
 	}
 
+	void PrintRecursive(Node<int>* current)
+	{
+		// Base case: we've reached the end (node is nullptr)
+		if (current == nullptr)
+			return;
+
+		// Recursive case: print and advance
+		printf("Current node value: %i\n", current->data);
+		PrintRecursive(current->next);
+	}
+
 	// Print every number in our list by walking it and outputting the data of each node
 	void Print()
 	{
@@ -73,7 +84,7 @@ public:
 		}
 	}
 
-private:
+//private:
 	Node<int>* head = nullptr;
 };
 
@@ -103,10 +114,11 @@ void NumberList()
 	list.Add(1);
 	list.Add(2);
 	list.Add(3);
-	list.Print();
-	list.Clear();
-	list.Print();
-	list.Print();
+	list.PrintRecursive(list.head);
+	//list.Print();
+	//list.Clear();
+	//list.Print();
+	//list.Print();
 }
 
 void PathFollowing()
@@ -324,25 +336,32 @@ void Searches()
 	printf("The position of %i is %i\n", number, position);
 }
 
+void Counting()
+{
+	printf("Iterative count:\n");
+	for (int i = 0; i < 5; i++)
+	{
+		printf("%i\n", i + 1);
+	}
+
+	printf("\nRecursive count:\n");
+	Count(5);
+}
+
 int main()
 {
+	// Recursion stuff (week 11):
 	//InfiniteLoop();
 	//MemoryGoofiness();
+	//Counting();
 	//printf("%i\n", CharacterCount('r',"Connor", 0));
 	//RecursiveNumbers();
-	Searches();
+	//Searches();
 
+	// List stuff (week 10):
 	//NumberNodes();
-	//NumberList();
+	NumberList();
 	//PathFollowing();
-	//printf("Iterative count:\n");
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	printf("%i\n", i + 1);
-	//}
-	//
-	//printf("\nRecursive count:\n");
-	//Count(5);
 	
 	return 0;
 }
