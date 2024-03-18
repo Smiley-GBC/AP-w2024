@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "Math.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 constexpr int SCREEN_WIDTH = 800;
@@ -214,10 +215,25 @@ void MemoryGoofiness()
 	}
 }
 
+int CharacterCount(char check, string text, int position)
+{
+	// Base case: we've reached the end of the string
+	if (position == text.length())
+		return 0;
+
+	// Recursive case 1: the current character is a match
+	if (text[position] == check)
+		return 1 + CharacterCount(check, text, position + 1);
+	else
+	// Recursive case 2: the current character is not a match
+		return CharacterCount(check, text, position + 1);
+}
+
 int main()
 {
 	//InfiniteLoop();
 	//MemoryGoofiness();
+	//printf("%i\n", CharacterCount('r',"Connor", 0));
 
 	//NumberNodes();
 	//NumberList();
