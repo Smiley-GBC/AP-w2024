@@ -180,23 +180,56 @@ void InfiniteLoop()
 	InfiniteLoop();
 }
 
+void NoMoreMemory()
+{
+	printf("Error 404: your PC can't run Cyrsis\n");
+}
+
+void MemoryGoofiness()
+{
+	// 1 byte (char) * 1024 = 1kb
+		// 1kb * 1024 = 1mb
+		// Our stack is less than 1mb (stack overflow if you run this)!
+	char data[1024 * 1024];
+
+	// Heap memory is essentially how much RAM you have (much larger than the stack)
+	// Allocate 1mb every iteration (may or may not crash your PC)
+	while (true)
+	{
+		char* memoryleak = new char[1024 * 1024];
+	}
+
+	int count = 0;
+	//std::set_new_handler(NoMoreMemory);
+	try {
+		int* pBigDataArray = new int[1000000000L];
+	}
+	catch (const std::bad_alloc&) {
+		NoMoreMemory();
+	}
+	for (int i = 0; i < 16; i++)
+	{
+		count = i + 1;
+		new char[1024 * 1024 * 1024];
+	}
+}
+
 int main()
 {
 	//InfiniteLoop();
+	//MemoryGoofiness();
 
 	//NumberNodes();
 	//NumberList();
 	//PathFollowing();
-	printf("Iterative count:\n");
-	for (int i = 0; i < 5; i++)
-	{
-		printf("%i\n", i + 1);
-	}
-
-	printf("\nRecursive count:\n");
-	Count(5);
-
-	
+	//printf("Iterative count:\n");
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	printf("%i\n", i + 1);
+	//}
+	//
+	//printf("\nRecursive count:\n");
+	//Count(5);
 	
 	return 0;
 }
