@@ -16,6 +16,9 @@ struct Node
 	Node<T>* next = nullptr;
 };
 
+// "NodeFunc is a pointer to a function that returns void and accepts 1 integer argument"
+using NodeFunc = void(*)(int&);
+
 class List
 {
 public:
@@ -59,6 +62,18 @@ public:
 			Node<int>* node = new Node<int>;
 			current->next = node;
 			node->data = number;
+		}
+	}
+
+	void ForEach(NodeFunc each)
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			each(current->data);
+			// Instead of printing, we can call our generic node function!
+			//cout << current->data << endl;
+			current = current->next;
 		}
 	}
 
@@ -108,13 +123,33 @@ void NumberNodes()
 	}
 }
 
+void PrintNumber(int& number)
+{
+	printf("Current number is %i\n", number);
+}
+
+void TakeDamage(int& health)
+{
+	health -= 10;
+}
+
 void NumberList()
 {
 	List list;
-	list.Add(1);
-	list.Add(2);
-	list.Add(3);
-	list.PrintRecursive(list.head);
+	list.Add(10);
+	list.Add(20);
+	list.Add(30);
+
+	// Display health before damage
+	list.ForEach(PrintNumber);
+
+	// Damage each enemy in the list
+	list.ForEach(TakeDamage);
+
+	// Display health after damage
+	list.ForEach(PrintNumber);
+
+	//list.PrintRecursive(list.head);
 	//list.Print();
 	//list.Clear();
 	//list.Print();
