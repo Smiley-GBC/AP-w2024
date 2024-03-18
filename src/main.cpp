@@ -159,11 +159,34 @@ void PathFollowing()
 	CloseWindow();
 }
 
+void Count(int number)
+{
+	// Recursive Case -- "condition for calling the function again"
+	if (number > 0)
+	{
+		printf("%i\n", number);
+		Count(number - 1);
+	}
+	else
+	// Base Case -- "condition to exit recursion"
+	{
+		printf("*End recursion*");
+	}
+}
+
 int main()
 {
 	//NumberNodes();
-	NumberList();
+	//NumberList();
 	//PathFollowing();
+	printf("Iterative count:\n");
+	for (int i = 0; i < 5; i++)
+	{
+		printf("%i\n", i + 1);
+	}
+
+	printf("\nRecursive count:\n");
+	Count(5);
 	
 	return 0;
 }
