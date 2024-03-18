@@ -229,11 +229,44 @@ int CharacterCount(char check, string text, int position)
 		return CharacterCount(check, text, position + 1);
 }
 
+int Factorial(int n)
+{
+	if (n == 0)
+		return 1;
+	else
+		return n * Factorial(n - 1);
+	
+	// Short-hand for above. Returns 1 if true, otherwise factorial if false
+	//return n == 0 ? 1 : n * Factorial(n - 1);
+}
+
+int Fibonacci(int n)
+{
+	if (n == 0)
+		return 0;
+	if (n == 1)
+		return 1;
+	return Fibonacci(n - 1) + Fibonacci(n - 2);
+}
+
+void RecursiveNumbers()
+{
+	printf("%i\n", Factorial(6));
+	printf("%i\n", Fibonacci(0));	// 0
+	printf("%i\n", Fibonacci(1));	// 1
+	printf("%i\n", Fibonacci(2));	// 1
+	printf("%i\n", Fibonacci(3));	// 2
+	printf("%i\n", Fibonacci(4));	// 3
+	printf("%i\n", Fibonacci(5));	// 5
+	printf("%i\n", Fibonacci(6));	// 8
+}
+
 int main()
 {
 	//InfiniteLoop();
 	//MemoryGoofiness();
 	//printf("%i\n", CharacterCount('r',"Connor", 0));
+	//RecursiveNumbers();
 
 	//NumberNodes();
 	//NumberList();
