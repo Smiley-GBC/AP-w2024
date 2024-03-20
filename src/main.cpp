@@ -4,6 +4,8 @@
 #include <array>
 #include <queue>
 #include <vector>
+#include <functional>
+#include <algorithm>
 using namespace std;
 
 const float TILE_WIDTH = 80.0f;
@@ -158,6 +160,29 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
 
 int main()
 {
+    //C++ data structures can be sorted
+    //By default, std::sort sorts ascending least to greatest like so:
+    //sort(vec.begin(), vec.end());
+    //If we instead want to sort ascending greatest to least, we can add a comparison object:
+    //sort(vec.begin(), vec.end(), greater<int>());
+    //We can also add a less comparison if need be
+    //sort(vec.begin(), vec.end(), less<int>());
+
+    vector<int> vec;
+    vec.push_back(1);
+    vec.push_back(2);
+    vec.push_back(3);
+
+    sort(vec.begin(), vec.end(), greater<int>());
+    printf("Printing stack greatest to least:\n");
+    for (int v : vec)
+        cout << v << endl;
+
+    sort(vec.begin(), vec.end(), less<int>());
+    printf("\nPrinting stack least to greatest:\n");
+    for (int v : vec)
+        cout << v << endl;
+
     const int screenWidth = 800;
     const int screenHeight = 800;
     InitWindow(screenWidth, screenHeight, "Tile Map");
