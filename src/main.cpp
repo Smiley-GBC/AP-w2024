@@ -29,6 +29,9 @@ struct Node
 {
     Cell cell;      // current
     Cell parent;    // previous
+
+    float g = 0.0f, h = 0.0f;
+    float F() { return g + h; }
 };
 
 Cell Invalid()
@@ -126,14 +129,30 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
         visited[current.row][current.col] = true;   // Mark as visited
         cells.push_back(current);
 
-        // "Range-based for-loop" -- identical to "foreach" in C#
-        // Basically does this Cell neighbour = neighbours[i]; automatically
+        float gNew, hNew;
         for (Cell neighbour : Neighbours(current, TILE_COUNT, TILE_COUNT))
         {
-            if (!visited[neighbour.row][neighbour.col])
+            // Don't re-explore neighbours (otherwise infinite loop)
+            if (visited[neighbour.row][neighbour.col])
+                continue;
+            
+            // Compute neighbour's f-score; f(n) = g(n) + h(n)
+            Node node = nodes[neighbour.row][neighbour.col];
+            gNew = node.g;
+            gNew += Manhattan(current, neighbour);
+            hNew = Manhattan(neighbour, goal);
+            // TODO -- add terrain cost to heuristic
+
+            // If the neighbour is unexplored or has the best score so far:
+            if (node.F() <= FLT_EPSILON || node.F() > (gNew + hNew))
             {
+                // Update graph connections
+                node.g = gNew;
+                node.h = hNew;
+                node.parent = current;
+                nodes[neighbour.row][neighbour.col] = node;
+
                 frontier.push(neighbour);
-                nodes[neighbour.row][neighbour.col].parent = current;
             }
         }
     }
