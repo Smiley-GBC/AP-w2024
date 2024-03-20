@@ -8,6 +8,8 @@
 #include <algorithm>
 using namespace std;
 
+void QueueTest();
+
 const float TILE_WIDTH = 80.0f;
 const float TILE_HEIGHT = 80.0f;
 const size_t TILE_COUNT = 10;
@@ -160,29 +162,6 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
 
 int main()
 {
-    //C++ data structures can be sorted
-    //By default, std::sort sorts ascending least to greatest like so:
-    //sort(vec.begin(), vec.end());
-    //If we instead want to sort ascending greatest to least, we can add a comparison object:
-    //sort(vec.begin(), vec.end(), greater<int>());
-    //We can also add a less comparison if need be
-    //sort(vec.begin(), vec.end(), less<int>());
-
-    vector<int> vec;
-    vec.push_back(1);
-    vec.push_back(2);
-    vec.push_back(3);
-
-    sort(vec.begin(), vec.end(), greater<int>());
-    printf("Printing stack greatest to least:\n");
-    for (int v : vec)
-        cout << v << endl;
-
-    sort(vec.begin(), vec.end(), less<int>());
-    printf("\nPrinting stack least to greatest:\n");
-    for (int v : vec)
-        cout << v << endl;
-
     const int screenWidth = 800;
     const int screenHeight = 800;
     InitWindow(screenWidth, screenHeight, "Tile Map");
@@ -237,4 +216,35 @@ int main()
 
     CloseWindow();
     return 0;
+}
+
+void QueueTest()
+{
+    priority_queue<int, vector<int>, greater<int>> lt;
+    lt.push(3);
+    lt.push(2);
+    lt.push(1);
+
+    priority_queue<int, vector<int>, less<int>> gt;
+    gt.push(1);
+    gt.push(2);
+    gt.push(3);
+
+    // Added data to our queues in reverse-order so we can prove that the comparisons sort the data accordingly
+    // Priority queues are sorted greatest to least by default (serve the customer with the highest priority)
+    // In order to sort least to greatest, we have to pass the greater<> comparison
+    // Think of it as "flipping an inequality"
+    printf("Least to greatest:\n");
+    while (!lt.empty())
+    {
+        cout << lt.top() << endl;
+        lt.pop();
+    }
+
+    printf("\nGreatest to least:\n");
+    while (!gt.empty())
+    {
+        cout << gt.top() << endl;
+        gt.pop();
+    }
 }
