@@ -10,13 +10,11 @@ using namespace std;
 constexpr int SCREEN_WIDTH = 800;
 constexpr int SCREEN_HEIGHT = 800;
 
-constexpr int STACK_MAX = 8;
-
-//template<typename T>
+template<typename T, int STACK_MAX>
 class Stack
 {
 public:
-	void Push(int value)
+	void Push(T value)
 	{
 		// Ensure we have room in our stack
 		assert(count < Capacity());
@@ -25,16 +23,16 @@ public:
 	}
 
 	// Most recently added value in our stack (LIFO)
-	int Top()
+	T Top()
 	{
 		// Ensure there's at least one value in our stack!
 		assert(count > 0);
 		return data[count - 1];
 	}
 
-	int Pop()
+	T Pop()
 	{
-		int top = Top();
+		T top = Top();
 		count--;
 		return top;
 	}
@@ -68,33 +66,40 @@ public:
 	}
 
 private:
-	int data[STACK_MAX];
+	T data[STACK_MAX];
 	int count = 0;
 };
 
 int main()
 {
-	Stack numbers;
+	Stack<int, 8> integers;
 	cout << "Stack push" << endl;
 	for (int i = 0; i < 8; i++)
-		numbers.Push(i);
-	numbers.Print();
+		integers.Push(i);
+	integers.Print();
 
 	cout << "Stack pop" << endl;
 	for (int i = 0; i < 8; i++)
-		cout << numbers.Pop() << endl;
+		cout << integers.Pop() << endl;
 
-	if (numbers.Empty())
+	if (integers.Empty())
 	{
 		cout << "No more numbers :(" << endl;
 	}
 
 	// Don't exceed the capacity of our stack!
-	if (!numbers.Full())
+	if (!integers.Full())
 	{
-		numbers.Push(69);
+		integers.Push(69);
 	}
-	numbers.Print();
+	integers.Print();
+
+	Stack<float, 4> decimals;
+	decimals.Push(Random(-1.0f, 1.0f));
+	decimals.Push(Random(-1.0f, 1.0f));
+	decimals.Push(Random(-1.0f, 1.0f));
+	decimals.Push(Random(-1.0f, 1.0f));
+	decimals.Print();
 	
 	return 0;
 }
