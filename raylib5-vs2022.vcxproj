@@ -15,7 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioManager.h" />
+    <ClInclude Include="include\DynamicQueue.h" />
+    <ClInclude Include="include\DynamicStack.h" />
+    <ClInclude Include="include\Queue.h" />
     <ClInclude Include="include\Singleton.h" />
+    <ClInclude Include="include\Stack.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

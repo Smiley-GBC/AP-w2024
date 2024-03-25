@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Globals">
+      <UniqueIdentifier>{45a381d7-873e-438a-a29f-4d40db86367b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Structures">
+      <UniqueIdentifier>{fb330387-17c4-4706-a195-97f209d5e8f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -21,10 +27,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Singleton.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Globals</Filter>
     </ClInclude>
     <ClInclude Include="include\AudioManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DynamicQueue.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DynamicStack.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Queue.h">
+      <Filter>Header Files\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Stack.h">
+      <Filter>Header Files\Structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
