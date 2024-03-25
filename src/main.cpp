@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <cassert>
+#include <queue>
 using namespace std;
 
 constexpr int SCREEN_WIDTH = 800;
@@ -119,6 +120,7 @@ public:
 
 constexpr int QUEUE_MAX = 8;
 
+
 class Queue
 {
 public:
@@ -159,7 +161,7 @@ public:
 
 	bool Empty()
 	{
-		return front == -1;
+		return front == -1 && back == -1;
 	}
 
 	bool Full()
@@ -195,15 +197,26 @@ private:
 };
 
 void StackTest();
+void QueueTest();
 
 int main()
 {
 	//StackTest();
-	Queue queue;
-	queue.Enqueue(3);
-	queue.Enqueue(6);
-	queue.Enqueue(9);
-	queue.Print();
+	//QueueTest();	// <--- broken
+	queue<int> queue;
+	queue.push(1);
+	queue.push(2);
+	queue.push(3);
+
+	while (!queue.empty())
+	{
+		// Get first in line
+		cout << queue.front() << endl;
+
+		// Remove first in line
+		queue.pop();
+	}
+
 	return 0;
 }
 
@@ -237,4 +250,27 @@ void StackTest()
 	decimals.Push(Random(-1.0f, 1.0f));
 	decimals.Push(Random(-1.0f, 1.0f));
 	decimals.Print();
+}
+
+void QueueTest()
+{
+	Queue queue;
+	queue.Enqueue(3);
+	queue.Enqueue(6);
+	queue.Enqueue(9);
+
+	cout << "Expecting 3, 6, 9:" << endl;
+	queue.Print();
+
+	cout << "Expecting 6, 9:" << endl;
+	queue.Dequeue();
+	queue.Print();
+
+	cout << "Expecting 9:" << endl;
+	queue.Dequeue();
+	queue.Print();
+
+	cout << "Expecting nothing!" << endl;
+	queue.Dequeue();
+	queue.Print();
 }
