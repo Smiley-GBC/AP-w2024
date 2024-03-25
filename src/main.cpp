@@ -1,11 +1,10 @@
 #include "raylib.h"
 #include "Math.h"
 #include <iostream>
-#include <string>
-#include <array>
-#include <vector>
 #include <cassert>
-#include <queue>
+
+#include <stack>	// LIFO
+#include <queue>	// FIFO
 using namespace std;
 
 constexpr int SCREEN_WIDTH = 800;
@@ -216,8 +215,18 @@ void QueueSTL();
 
 int main()
 {
-	//StackTest();
+	cout << "Custom stack test:" << endl;
+	StackTest();
+
+	cout << endl << "Custom queue test:" << endl;
 	QueueTest();
+
+	cout << endl << "STL stack test:" << endl;
+	StackSTL();
+
+	cout << endl << "STL queue test:" << endl;
+	QueueSTL();
+
 	return 0;
 }
 
@@ -278,7 +287,19 @@ void QueueTest()
 
 void StackSTL()
 {
+	stack<int> stack;
+	stack.push(1);
+	stack.push(2);
+	stack.push(3);
 
+	while (!stack.empty())
+	{
+		// Get most recently added
+		cout << stack.top() << endl;
+
+		// Remove most recently added
+		stack.pop();
+	}
 }
 
 void QueueSTL()
