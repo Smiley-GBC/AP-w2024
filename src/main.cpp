@@ -59,6 +59,11 @@ public:
 		return STACK_MAX;
 	}
 
+	void Clear()
+	{
+		count = 0;
+	}
+
 	void Print()
 	{
 		for (int i = 0; i < count; i++)
@@ -117,14 +122,12 @@ public:
 	}
 };
 
-constexpr int QUEUE_MAX = 8;
-
-
+template<typename T, int QUEUE_MAX>
 class Queue
 {
 public:
 	// Add a value to the back of our queue
-	void Enqueue(int value)
+	void Enqueue(T value)
 	{
 		assert(!Full());
 
@@ -139,12 +142,12 @@ public:
 	}
 
 	// Remove and return the front of our queue
-	int Dequeue()
+	T Dequeue()
 	{
 		assert(!Empty());
 
 		// Save the first item
-		int temp = data[front];
+		T temp = data[front];
 
 		// Move front
 		++front %= Capacity();
@@ -157,13 +160,13 @@ public:
 	}
 
 	// "First in line"
-	int Front()
+	T Front()
 	{
 		return data[front];
 	}
 
 	// "Last in line"
-	int Back()
+	T Back()
 	{
 		return data[back];
 	}
@@ -186,6 +189,11 @@ public:
 	int Capacity()
 	{
 		return QUEUE_MAX;
+	}
+
+	void Clear()
+	{
+		front = back = count = 0;
 	}
 
 	void Print()
@@ -264,7 +272,7 @@ void StackTest()
 
 void QueueTest()
 {
-	Queue queue;
+	Queue<int, 8> queue;
 	queue.Enqueue(3);
 	queue.Enqueue(6);
 	queue.Enqueue(9);
