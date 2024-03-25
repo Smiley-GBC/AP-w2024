@@ -24,6 +24,31 @@ public:
 		count++;
 	}
 
+	// Most recently added value in our stack (LIFO)
+	int Top()
+	{
+		// Ensure there's at least one value in our stack!
+		assert(count > 0);
+		return data[count - 1];
+	}
+
+	int Pop()
+	{
+		int top = Top();
+		count--;
+		return top;
+	}
+
+	bool Empty()
+	{
+		return Count() == 0;
+	}
+
+	bool Full()
+	{
+		return Count() >= Capacity();
+	}
+
 	// Number of elements in our stack
 	int Count()
 	{
@@ -50,14 +75,26 @@ private:
 int main()
 {
 	Stack numbers;
+	cout << "Stack push" << endl;
 	for (int i = 0; i < 8; i++)
 		numbers.Push(i);
+	numbers.Print();
+
+	cout << "Stack pop" << endl;
+	for (int i = 0; i < 8; i++)
+		cout << numbers.Pop() << endl;
+
+	if (numbers.Empty())
+	{
+		cout << "No more numbers :(" << endl;
+	}
 
 	// Don't exceed the capacity of our stack!
-	if (numbers.Count() < numbers.Capacity())
+	if (!numbers.Full())
 	{
 		numbers.Push(69);
 	}
 	numbers.Print();
+	
 	return 0;
 }
