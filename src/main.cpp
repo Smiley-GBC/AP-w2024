@@ -129,11 +129,14 @@ public:
 	{
 		assert(!Full());
 
-		// Move back
-		back = (back + 1) % Capacity();
-
 		// Insert the new item
 		data[back] = value;
+
+		// Move back
+		++back %= Capacity();
+
+		// Increment number of elements
+		count++;
 	}
 
 	// Remove and return the front of our queue
@@ -141,27 +144,34 @@ public:
 	{
 		assert(!Empty());
 
-		// Move front
-		front = (front + 1) % Capacity();
+		// Save the first item
+		int temp = data[front];
 
-		// Return the first item
+		// Move front
+		++front %= Capacity();
+
+		// Decrement number of elements
+		count--;
+
+		// Output copy of the previously first item
+		return temp;
+	}
+
+	// "First in line"
+	int Front()
+	{
 		return data[front];
 	}
 
-	// The value at the front of our queue (who is "first in line")
-	int Front()
-	{
-		return front;
-	}
-
+	// "Last in line"
 	int Back()
 	{
-		return back;
+		return data[back];
 	}
 
 	bool Empty()
 	{
-		return front == -1 && back == -1;
+		return count == 0;
 	}
 
 	bool Full()
@@ -171,7 +181,7 @@ public:
 
 	int Count()
 	{
-		return back - front;
+		return count;
 	}
 
 	int Capacity()
@@ -181,42 +191,33 @@ public:
 
 	void Print()
 	{
-		int i = front == -1 ? 0 : front;
-		int count = Count();
-		for (; i < count; i++)
+		if (Empty()) return;
+		int counter = 0;
+		int i = front;
+		while (counter < Count())
 		{
-			//cout << i << endl;
 			cout << data[i] << endl;
+			++i %= Capacity();
+			counter++;
 		}
 	}
 
 private:
 	int data[QUEUE_MAX];
-	int front = -1;
-	int back = -1;
+	int front = 0;
+	int back = 0;
+	int count = 0;
 };
 
 void StackTest();
 void QueueTest();
+void StackSTL();
+void QueueSTL();
 
 int main()
 {
 	//StackTest();
-	//QueueTest();	// <--- broken
-	queue<int> queue;
-	queue.push(1);
-	queue.push(2);
-	queue.push(3);
-
-	while (!queue.empty())
-	{
-		// Get first in line
-		cout << queue.front() << endl;
-
-		// Remove first in line
-		queue.pop();
-	}
-
+	QueueTest();
 	return 0;
 }
 
@@ -273,4 +274,26 @@ void QueueTest()
 	cout << "Expecting nothing!" << endl;
 	queue.Dequeue();
 	queue.Print();
+}
+
+void StackSTL()
+{
+
+}
+
+void QueueSTL()
+{
+	queue<int> queue;
+	queue.push(1);
+	queue.push(2);
+	queue.push(3);
+
+	while (!queue.empty())
+	{
+		// Get first in line
+		cout << queue.front() << endl;
+
+		// Remove first in line
+		queue.pop();
+	}
 }
