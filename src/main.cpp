@@ -19,9 +19,21 @@ public:
 	void Push(int value)
 	{
 		// Ensure we have room in our stack
-		assert(count < STACK_MAX);
+		assert(count < Capacity());
 		data[count] = value;
 		count++;
+	}
+
+	// Number of elements in our stack
+	int Count()
+	{
+		return count;
+	}
+
+	// Maximum number of elements our stack can hold
+	int Capacity()
+	{
+		return STACK_MAX;
 	}
 
 	void Print()
@@ -42,7 +54,10 @@ int main()
 		numbers.Push(i);
 
 	// Don't exceed the capacity of our stack!
-	//numbers.Push(69);
+	if (numbers.Count() < numbers.Capacity())
+	{
+		numbers.Push(69);
+	}
 	numbers.Print();
 	return 0;
 }
