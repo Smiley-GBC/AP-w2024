@@ -34,6 +34,8 @@ struct Node
     float F() { return g + h; }
 };
 
+Node nodes[TILE_COUNT][TILE_COUNT];
+
 Cell Invalid()
 {
     return { -1, -1 };
@@ -99,7 +101,8 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
     bool visited[TILE_COUNT][TILE_COUNT]; // "closed list"
     frontier.push(start);
 
-    Node nodes[TILE_COUNT][TILE_COUNT];
+    // Made global for visualization
+    //Node nodes[TILE_COUNT][TILE_COUNT];
     for (int row = 0; row < TILE_COUNT; row++)
     {
         for (int col = 0; col < TILE_COUNT; col++)
@@ -108,6 +111,8 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
             visited[row][col] = tiles[row][col] == STONE;
             nodes[row][col].cell = { row, col };
             nodes[row][col].parent = Invalid();
+            nodes[row][col].g = 0.0f;
+            nodes[row][col].h = 0.0f;
         }
     }
 
@@ -117,7 +122,7 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
         // Exit if there's nothing left to explore
         if (frontier.empty()) break;
 
-        Cell current = frontier.top();    // Get next in line
+        Cell current = frontier.top();      // Get next in line
         frontier.pop();                     // Remove from line
 
         if (current == goal)
@@ -138,8 +143,9 @@ vector<Cell> FloodFill(Cell start, Cell goal, int tiles[TILE_COUNT][TILE_COUNT],
             
             // Compute neighbour's f-score; f(n) = g(n) + h(n)
             Node node = nodes[neighbour.row][neighbour.col];
-            gNew = node.g;
-            gNew += Manhattan(current, neighbour);
+            //gNew = node.g;
+            //gNew += Manhattan(current, neighbour);
+            gNew = Manhattan(start, current);
             hNew = Manhattan(neighbour, goal);
             // TODO -- add terrain cost to heuristic
 
@@ -201,17 +207,26 @@ int main()
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
+    Cell test1{ 9, 9 };
+    Cell test2{ 10, 10 };
+
     Cell start, end;
     start.row = 6; start.col = 5;
     end.row = 5; end.col = 9;
+
+    float d1 = Manhattan(test1, end);
+    float d2 = Manhattan(test2, end);
+
     int stepCount = 0;
     while (!WindowShouldClose())
     {
         if (IsKeyDown(KEY_SPACE)) ++stepCount;
+        vector<Cell> cells = FloodFill(start, end, grid, stepCount);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        // Render tiles
         for (size_t row = 0; row < TILE_COUNT; row++)
         {
             for (size_t col = 0; col < TILE_COUNT; col++)
@@ -222,12 +237,25 @@ int main()
             }
         }
 
-        vector<Cell> cells = FloodFill(start, end, grid, stepCount);
+        // Render path
         for (size_t i = 0; i < cells.size(); i++)
         {
             Cell neighbour = cells[i];
             Vector2 position = Vector2{ neighbour.col * TILE_WIDTH, neighbour.row * TILE_HEIGHT };
             DrawRectangleV(position, { TILE_WIDTH, TILE_HEIGHT }, PURPLE);
+        }
+
+        // Render scores (must render on top of path)
+        for (size_t row = 0; row < TILE_COUNT; row++)
+        {
+            for (size_t col = 0; col < TILE_COUNT; col++)
+            {
+                Vector2 position = Vector2{ col * TILE_WIDTH, row * TILE_HEIGHT };
+                Node& node = nodes[row][col];
+                DrawText(TextFormat("f: %.2f", node.F()), position.x + 5, position.y + 5, 10, RED);
+                DrawText(TextFormat("h: %.2f", node.h), position.x + 5, position.y + 15, 10, ORANGE);
+                DrawText(TextFormat("g: %.2f", node.g), position.x + 5, position.y + 25, 10, GOLD);
+            }
         }
 
         EndDrawing();
