@@ -79,15 +79,21 @@ int main()
     while (!WindowShouldClose())
     {
         Command* command = nullptr;
-        //GetKeyPressed();
-        if (IsKeyPressed(KEY_W))
+        switch (GetKeyPressed())
+        {
+        case KEY_W:
             command = new MoveCommand(player, -1, 0);
-        else if (IsKeyPressed(KEY_S))
+            break;
+        case KEY_S:
             command = new MoveCommand(player, 1, 0);
-        else if (IsKeyPressed(KEY_A))
+            break;
+        case KEY_A:
             command = new MoveCommand(player, 0, -1);
-        else if (IsKeyPressed(KEY_D))
+            break;
+        case KEY_D:
             command = new MoveCommand(player, 0, 1);
+            break;
+        }
 
         if (command != nullptr)
         {
