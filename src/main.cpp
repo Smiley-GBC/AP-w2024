@@ -29,22 +29,19 @@ public:
 class MoveCommand : public Command
 {
 public:
-    MoveCommand(Cell& current) : mCell(current) {}
-
-    int dx = 0;
-    int dy = 0;
+    MoveCommand(Cell& current, int dy, int dx) : mCell(current), mDy(dy), mDx(dx) {}
 
     void Run() final
     {
         Cell newCell = mCell;
-        newCell.row += dy;
-        newCell.col += dx;
+        newCell.row += mDy;
+        newCell.col += mDx;
         mCell = CanMove(newCell) ? newCell : mCell;
     }
 
     void Undo() final
     {
-        mCell = { mCell.row - dy, mCell.col - dx };
+        mCell = { mCell.row - mDy, mCell.col - mDx };
     }
 
 private:
@@ -54,6 +51,7 @@ private:
     }
 
     Cell& mCell;
+    int mDx, mDy;
 };
 
 bool CanMove(Cell cell)
@@ -77,46 +75,42 @@ int main()
     player.row = TILE_COUNT / 2;
     player.col = TILE_COUNT / 2;
 
-    stack<MoveCommand*> history;
+    stack<Command*> history;
 
     while (!WindowShouldClose())
     {
-        MoveCommand* moveCommand = nullptr;
+        Command* command = nullptr;
         //Cell newPlayer = player;
         if (IsKeyPressed(KEY_W))
         {
-            moveCommand = new MoveCommand(player);
-            moveCommand->dy = -1;
+            command = new MoveCommand(player, -1, 0);
             //newPlayer.row -= 1;
         }
         else if (IsKeyPressed(KEY_S))
         {
-            moveCommand = new MoveCommand(player);
-            moveCommand->dy = 1;
+            command = new MoveCommand(player, 1, 0);
             //newPlayer.row += 1;
         }
         else if (IsKeyPressed(KEY_A))
         {
-            moveCommand = new MoveCommand(player);
-            moveCommand->dx = -1;
+            command = new MoveCommand(player, 0, -1);
             //newPlayer.col -= 1;
         }
         else if (IsKeyPressed(KEY_D))
         {
-            moveCommand = new MoveCommand(player);
-            moveCommand->dx = 1;
+            command = new MoveCommand(player, 0, 1);
             //newPlayer.col += 1;
         }
 
-        if (moveCommand != nullptr)
+        if (command != nullptr)
         {
-            moveCommand->Run();
-            history.push(moveCommand);
+            command->Run();
+            history.push(command);
         }
 
         if (IsKeyPressed(KEY_Z) && !history.empty())
         {
-            MoveCommand* recent = history.top();
+            Command* recent = history.top();
             recent->Undo();
             delete recent;
             history.pop();
