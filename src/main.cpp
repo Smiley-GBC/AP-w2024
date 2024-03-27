@@ -1,11 +1,10 @@
 #include "raylib.h"
 #include "Math.h"
-#include <iostream>
-#include <array>
+
+#include <stack>
 #include <queue>
-#include <vector>
-#include <functional>
-#include <algorithm>
+
+#include <iostream>
 using namespace std;
 
 void QueueTest();
@@ -24,6 +23,7 @@ class Command
 {
 public:
     virtual void Run() = 0;
+    virtual void Undo() = 0;
 };
 
 class MoveCommand : public Command
@@ -40,6 +40,11 @@ public:
         newCell.row += dy;
         newCell.col += dx;
         mCell = CanMove(newCell) ? newCell : mCell;
+    }
+
+    void Undo() final
+    {
+        mCell = { mCell.row - dy, mCell.col - dx };
     }
 
 private:
@@ -63,8 +68,6 @@ void DrawTile(Cell cell, Color color)
     DrawRectangle(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
 }
 
-
-
 int main()
 {
     InitWindow(SCREEN_SIZE, SCREEN_SIZE, "Tile Map");
@@ -73,6 +76,8 @@ int main()
     Cell player;
     player.row = TILE_COUNT / 2;
     player.col = TILE_COUNT / 2;
+
+    stack<MoveCommand*> history;
 
     while (!WindowShouldClose())
     {
@@ -102,11 +107,19 @@ int main()
             moveCommand->dx = 1;
             //newPlayer.col += 1;
         }
+
         if (moveCommand != nullptr)
         {
             moveCommand->Run();
-            delete moveCommand;
-            moveCommand = nullptr;
+            history.push(moveCommand);
+        }
+
+        if (IsKeyPressed(KEY_Z) && !history.empty())
+        {
+            MoveCommand* recent = history.top();
+            recent->Undo();
+            delete recent;
+            history.pop();
         }
 
         // "If we can move, assign the player to the new position.
