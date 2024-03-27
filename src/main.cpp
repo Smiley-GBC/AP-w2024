@@ -9,15 +9,20 @@
 using namespace std;
 
 void QueueTest();
-const float SCREEN_SIZE = 800.0f;
-const float TILE_COUNT = 10.0f;
-const float TILE_SIZE = SCREEN_SIZE / TILE_COUNT;
+const int SCREEN_SIZE = 800;
+const int TILE_COUNT = 10;
+const int TILE_SIZE = SCREEN_SIZE / TILE_COUNT;
 
 struct Cell
 {
     int row;    // y
     int col;    // x
 };
+
+bool CanMove(Cell cell)
+{
+    return cell.col >= 0 && cell.col < TILE_COUNT && cell.row >= 0 && cell.row < TILE_COUNT;
+}
 
 // World-space to grid-space --> "Quantization"
 // Grid-space to world-space --> "Localization"
@@ -55,18 +60,12 @@ int main()
             newPlayer.col += 1;
         }
 
+        // "If we can move, assign the player to the new position.
+        // Otherwise, keep the previous position."
+        player = CanMove(newPlayer) ? newPlayer : player;
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        // Render tiles (unnecessary cause we can just colour our background white)
-        //for (int row = 0; row < TILE_COUNT; row++)
-        //{
-        //    for (int col = 0; col < TILE_COUNT; col++)
-        //    {
-        //        DrawTile({ row, col }, WHITE);
-        //    }
-        //}
-
-        player = newPlayer;
         DrawTile(player, RED);
         EndDrawing();
     }
@@ -74,6 +73,15 @@ int main()
     CloseWindow();
     return 0;
 }
+
+// Render tiles (unnecessary cause we can just colour our background white)
+//for (int row = 0; row < TILE_COUNT; row++)
+//{
+//    for (int col = 0; col < TILE_COUNT; col++)
+//    {
+//        DrawTile({ row, col }, WHITE);
+//    }
+//}
 
 //vector<Cell> Neighbours(Cell cell, int rows, int cols)
 //{
