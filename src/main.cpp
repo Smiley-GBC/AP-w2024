@@ -19,6 +19,38 @@ struct Cell
     int col;    // x
 };
 
+// Abstract base class
+class Command
+{
+public:
+    virtual void Run() = 0;
+};
+
+class MoveCommand : public Command
+{
+public:
+    MoveCommand(Cell& current) : mCell(current) {}
+
+    int dx = 0;
+    int dy = 0;
+
+    void Run() final
+    {
+        Cell newCell = mCell;
+        newCell.row += dy;
+        newCell.col += dx;
+        mCell = CanMove(newCell) ? newCell : mCell;
+    }
+
+private:
+    bool CanMove(Cell cell)
+    {
+        return cell.col >= 0 && cell.col < TILE_COUNT && cell.row >= 0 && cell.row < TILE_COUNT;
+    }
+
+    Cell& mCell;
+};
+
 bool CanMove(Cell cell)
 {
     return cell.col >= 0 && cell.col < TILE_COUNT && cell.row >= 0 && cell.row < TILE_COUNT;
@@ -31,6 +63,8 @@ void DrawTile(Cell cell, Color color)
     DrawRectangle(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
 }
 
+
+
 int main()
 {
     InitWindow(SCREEN_SIZE, SCREEN_SIZE, "Tile Map");
@@ -42,27 +76,42 @@ int main()
 
     while (!WindowShouldClose())
     {
-        Cell newPlayer = player;
+        MoveCommand* moveCommand = nullptr;
+        //Cell newPlayer = player;
         if (IsKeyPressed(KEY_W))
         {
-            newPlayer.row -= 1;
+            moveCommand = new MoveCommand(player);
+            moveCommand->dy = -1;
+            //newPlayer.row -= 1;
         }
         else if (IsKeyPressed(KEY_S))
         {
-            newPlayer.row += 1;
+            moveCommand = new MoveCommand(player);
+            moveCommand->dy = 1;
+            //newPlayer.row += 1;
         }
         else if (IsKeyPressed(KEY_A))
         {
-            newPlayer.col -= 1;
+            moveCommand = new MoveCommand(player);
+            moveCommand->dx = -1;
+            //newPlayer.col -= 1;
         }
         else if (IsKeyPressed(KEY_D))
         {
-            newPlayer.col += 1;
+            moveCommand = new MoveCommand(player);
+            moveCommand->dx = 1;
+            //newPlayer.col += 1;
+        }
+        if (moveCommand != nullptr)
+        {
+            moveCommand->Run();
+            delete moveCommand;
+            moveCommand = nullptr;
         }
 
         // "If we can move, assign the player to the new position.
         // Otherwise, keep the previous position."
-        player = CanMove(newPlayer) ? newPlayer : player;
+        //player = CanMove(newPlayer) ? newPlayer : player;
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
