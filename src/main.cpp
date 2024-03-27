@@ -17,7 +17,7 @@ struct Cell
     int col;    // x
 };
 
-// Abstract base class
+// Abstract base class (interface)
 class Command
 {
 public:
@@ -53,18 +53,6 @@ private:
     int mDx, mDy;
 };
 
-bool CanMove(Cell cell)
-{
-    return cell.col >= 0 && cell.col < TILE_COUNT && cell.row >= 0 && cell.row < TILE_COUNT;
-}
-
-// World-space to grid-space --> "Quantization"
-// Grid-space to world-space --> "Localization"
-void DrawTile(Cell cell, Color color)
-{
-    DrawRectangle(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
-}
-
 int main()
 {
     InitWindow(SCREEN_SIZE, SCREEN_SIZE, "Tile Map");
@@ -75,7 +63,6 @@ int main()
     player.col = TILE_COUNT / 2;
 
     stack<Command*> history;
-
     while (!WindowShouldClose())
     {
         Command* command = nullptr;
@@ -111,7 +98,7 @@ int main()
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawTile(player, RED);
+        DrawRectangle(player.col * TILE_SIZE, player.row * TILE_SIZE, TILE_SIZE, TILE_SIZE, RED);
         EndDrawing();
     }
 
