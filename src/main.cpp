@@ -19,27 +19,55 @@ struct Cell
     int col;    // x
 };
 
+// World-space to grid-space --> "Quantization"
+// Grid-space to world-space --> "Localization"
+void DrawTile(Cell cell, Color color)
+{
+    DrawRectangle(cell.col * TILE_SIZE, cell.row * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
+}
+
 int main()
 {
     InitWindow(SCREEN_SIZE, SCREEN_SIZE, "Tile Map");
     SetTargetFPS(60);
 
+    Cell player;
+    player.row = TILE_COUNT / 2;
+    player.col = TILE_COUNT / 2;
+
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        // Render tiles
-        for (size_t row = 0; row < TILE_COUNT; row++)
+        Cell newPlayer = player;
+        if (IsKeyPressed(KEY_W))
         {
-            for (size_t col = 0; col < TILE_COUNT; col++)
-            {
-                Vector2 position = Vector2{ col * TILE_SIZE, row * TILE_SIZE };
-                //Color color = tileColors[grid[row][col]];
-                DrawRectangleV(position, { TILE_SIZE, TILE_SIZE }, RED);
-            }
+            newPlayer.row -= 1;
+        }
+        else if (IsKeyPressed(KEY_S))
+        {
+            newPlayer.row += 1;
+        }
+        else if (IsKeyPressed(KEY_A))
+        {
+            newPlayer.col -= 1;
+        }
+        else if (IsKeyPressed(KEY_D))
+        {
+            newPlayer.col += 1;
         }
 
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        // Render tiles (unnecessary cause we can just colour our background white)
+        //for (int row = 0; row < TILE_COUNT; row++)
+        //{
+        //    for (int col = 0; col < TILE_COUNT; col++)
+        //    {
+        //        DrawTile({ row, col }, WHITE);
+        //    }
+        //}
+
+        player = newPlayer;
+        DrawTile(player, RED);
         EndDrawing();
     }
 
