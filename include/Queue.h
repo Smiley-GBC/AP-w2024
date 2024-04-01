@@ -80,7 +80,6 @@ public:
 
 	void Print()
 	{
-		if (Empty()) return;
 		int counter = 0;
 		int i = front;
 		while (counter < Count())
@@ -92,7 +91,7 @@ public:
 	}
 
 private:
-	int data[QUEUE_MAX];
+	T data[QUEUE_MAX]{};
 	int front = 0;
 	int back = 0;
 	int count = 0;

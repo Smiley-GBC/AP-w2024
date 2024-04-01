@@ -70,21 +70,43 @@ void QueueTest()
 	queue.Enqueue(3);
 	queue.Enqueue(6);
 	queue.Enqueue(9);
+	queue.Enqueue(12);
 
-	cout << "Expecting 3, 6, 9:" << endl;
+	for (int i = 0; i < 4; i++)
+	{
+		queue.Enqueue(i);
+	}
+	// 8 elements in queue --> back == [7], front = 0 (because nothing's been removed)
+
+	for (int i = 0; i < 3; i++)
+	{
+		queue.Dequeue();
+	}
+	// 5 elements in queue --> back == [7], front = 3 
+
 	queue.Print();
 
-	cout << "Expecting 6, 9:" << endl;
-	queue.Dequeue();
-	queue.Print();
+	cout << "Queue wrap:" << endl;
+	for (int i = 0; i < 3; i++)
+	{
+		queue.Enqueue(i * 3);
+	}
 
-	cout << "Expecting 9:" << endl;
-	queue.Dequeue();
 	queue.Print();
-
-	cout << "Expecting nothing!" << endl;
-	queue.Dequeue();
-	queue.Print();
+	//cout << "Expecting 3, 6, 9:" << endl;
+	//queue.Print();
+	//
+	//cout << "Expecting 6, 9:" << endl;
+	//queue.Dequeue();
+	//queue.Print();
+	//
+	//cout << "Expecting 9:" << endl;
+	//queue.Dequeue();
+	//queue.Print();
+	//
+	//cout << "Expecting nothing!" << endl;
+	//queue.Dequeue();
+	//queue.Print();
 }
 
 void StackSTL()
