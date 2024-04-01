@@ -10,6 +10,136 @@
 #include <iostream>
 using namespace std;
 
+template<typename T>
+struct Node
+{
+	T data;
+	Node<T>* next = nullptr;
+};
+
+// "NodeFunc is a pointer to a function that returns void and accepts 1 integer argument"
+using NodeFunc = void(*)(int&);
+
+class List
+{
+public:
+
+	// Destroy list by walking it and deleting each element
+	~List()
+	{
+		Clear();
+	}
+
+	void Clear()
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			Node<int>* temp = current;
+			current = current->next;
+			delete temp;
+		}
+		head = nullptr;
+	}
+
+	void Add(int number)
+	{
+		if (head == nullptr)
+		{
+			// Initialize our list if there's nothing in it
+			head = new Node<int>;
+			head->data = number;
+		}
+		else
+		{
+			// Loop until we find the last element
+			Node<int>* current = head;
+			while (current->next != nullptr)
+			{
+				current = current->next;
+			}
+
+			// Update the last element to point to the new node
+			Node<int>* node = new Node<int>;
+			current->next = node;
+			node->data = number;
+		}
+	}
+
+	// TODO 1 -- create a Get function
+	// TODO 2 -- modify the Remove method to output the removed value
+	void Remove(int number)
+	{
+		// Case 1: nothing in the list
+		if (head == nullptr)
+			return;
+
+		// Case 2: first element in list (head) is the element we want to remove
+		if (head->data == number)
+		{
+			Node<int>* next = head->next;
+			delete head;
+			head = next;
+		}
+
+		// Case 3: need to make previous element point to element after the one we want to remove
+		Node<int>* current = head;
+		Node<int>* previous = nullptr;
+		
+		// Loop until we've reached the end or found our number
+		while (current != nullptr && current->data != number)
+		{
+			previous = current;
+			current = current->next;
+		}
+
+		// Once our loop exits, if current is non-null, we've found the number!
+		// (Otherwise if current is null we've searched the entire list without luck)
+		if (current != nullptr)
+		{
+			previous->next = current->next;
+			delete current;
+		}
+	}
+
+	void ForEach(NodeFunc each)
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			each(current->data);
+			// Instead of printing, we can call our generic node function!
+			//cout << current->data << endl;
+			current = current->next;
+		}
+	}
+
+	void PrintRecursive(Node<int>* current)
+	{
+		// Base case: we've reached the end (node is nullptr)
+		if (current == nullptr)
+			return;
+
+		// Recursive case: print and advance
+		printf("Current node value: %i\n", current->data);
+		PrintRecursive(current->next);
+	}
+
+	// Print every number in our list by walking it and outputting the data of each node
+	void Print()
+	{
+		Node<int>* current = head;
+		while (current != nullptr)
+		{
+			cout << current->data << endl;
+			current = current->next;
+		}
+	}
+
+	//private:
+	Node<int>* head = nullptr;
+};
+
 void StackTest();
 void QueueTest();
 void StackSTL();
@@ -17,17 +147,26 @@ void QueueSTL();
 
 int main()
 {
-	cout << "Custom stack test:" << endl;
-	StackTest();
+	List list;
+	list.Add(1);
+	list.Add(2);
+	list.Add(3);
+	list.Print();
 
-	cout << endl << "Custom queue test:" << endl;
-	QueueTest();
+	list.Remove(2);
+	list.Print();
 
-	cout << endl << "STL stack test:" << endl;
-	StackSTL();
-
-	cout << endl << "STL queue test:" << endl;
-	QueueSTL();
+	//cout << "Custom stack test:" << endl;
+	//StackTest();
+	//
+	//cout << endl << "Custom queue test:" << endl;
+	//QueueTest();
+	//
+	//cout << endl << "STL stack test:" << endl;
+	//StackSTL();
+	//
+	//cout << endl << "STL queue test:" << endl;
+	//QueueSTL();
 
 	return 0;
 }
