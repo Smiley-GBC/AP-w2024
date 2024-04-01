@@ -66,6 +66,35 @@ public:
 		}
 	}
 
+	void AddSorted(int number)
+	{
+		if (head == nullptr || head->data >= number)
+		{
+			Node<int>* temp = head;
+			head = new Node<int>;
+			head->data = number;
+			head->next = temp;
+		}
+		else
+		{
+			Node<int>* previous = head;
+			Node<int>* current = head->next;
+
+			// Loop until we've reached the end or found our number
+			while (current != nullptr && current->data < number)
+			{
+				previous = current;
+				current = current->next;
+			}
+
+			// Insert sorted node in-between previous & next
+			Node<int>* node = new Node<int>;
+			node->data = number;
+			previous->next = node;
+			node->next = current;
+		}
+	}
+
 	// TODO 1 -- create a Get function
 	// TODO 2 -- modify the Remove method to output the removed value
 	void Remove(int number)
@@ -136,7 +165,7 @@ public:
 		}
 	}
 
-	//private:
+private:
 	Node<int>* head = nullptr;
 };
 
@@ -148,9 +177,9 @@ void QueueSTL();
 int main()
 {
 	List list;
-	list.Add(1);
-	list.Add(2);
-	list.Add(3);
+	list.AddSorted(3);
+	list.AddSorted(2);
+	list.AddSorted(1);
 	list.Print();
 
 	list.Remove(2);
