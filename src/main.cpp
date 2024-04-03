@@ -31,16 +31,54 @@ struct Entity
 	float speed;
 };
 
+array<Vector2, 4> waypoints
+{
+	Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f },
+	Vector2{ SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.2f },
+	Vector2{ SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f },
+	Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f }
+};
+
+void Patrol(Entity& entity, float& time, int& current, int& next)
+{
+	entity.position = entity.position + Normalize(waypoints[next] - entity.position) * entity.speed * GetFrameTime();
+
+	// Change interval if close to the destination
+	if (Distance(waypoints[next], entity.position) < 10.0f)
+	{
+		time = 0.0f;
+		++current %= waypoints.size();
+		++next %= waypoints.size();
+	}
+}
+
+// Move to waypoint from which target is visible to viewer (line of sight from viewer to target)
+void MoveToVisibility(Entity& viewer/*enemy*/, Entity& target/*players*/)
+{
+	// Move to line of sight
+	float shortestDistance = FLT_MAX;
+	size_t nearestIndex = 0;
+	for (size_t i = 0; i < waypoints.size(); i++)
+	{
+		// If there's a line of sight from waypoint to player, see if its the nearest waypoint (to the enemy)
+		if (!LineCircle(waypoints[i], target.position, CENTRE, OBSTACLE_RADIUS))
+		{
+			float waypointDistance = DistanceSqr(waypoints[i], viewer.position);
+			if (waypointDistance < shortestDistance)
+			{
+				shortestDistance = waypointDistance;
+				nearestIndex = i;
+			}
+		}
+	}
+
+	Vector2 nearestWaypoint = waypoints[nearestIndex];
+	viewer.position = viewer.position + Normalize(nearestWaypoint - viewer.position) * viewer.speed * GetFrameTime();
+
+}
+
 int main()
 {
-	array<Vector2, 4> waypoints
-	{
-		Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f },
-		Vector2{ SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.2f },
-		Vector2{ SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f },
-		Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f }
-	};
-
 	Entity player;
 	player.position = Vector2{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
 	player.speed = 250.0f;	// 250 pixels per second
@@ -49,7 +87,7 @@ int main()
 	enemy.position = waypoints[0];
 	enemy.speed = 200.0f;
 
-	float detectionRadiusFar = 250.0f;
+	float detectionRadiusFar = 400.0f;
 	float detectionRadiusNear = 100.0f;
 
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
@@ -110,21 +148,12 @@ int main()
 			}
 			else
 			{
-				// Move to line of sight
+				MoveToVisibility(enemy, player);
 			}
 		}
 		else
 		{
-			// Patrol
-			enemy.position = enemy.position + Normalize(waypoints[next] - waypoints[current]) * enemy.speed * dt;
-
-			// Change interval if close to the destination
-			if (Distance(waypoints[next], enemy.position) < 10.0f)
-			{
-				time = 0.0f;
-				++current %= waypoints.size();
-				++next %= waypoints.size();
-			}
+			Patrol(enemy, time, current, next);
 		}
 
 		BeginDrawing();
@@ -132,6 +161,7 @@ int main()
 		for (const Vector2& waypoint : waypoints)
 			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
 		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
+
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
 		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
@@ -143,3 +173,23 @@ int main()
 	CloseWindow();
 	return 0;
 }
+
+// Move to line of sight
+//float shortestDistance = FLT_MAX;
+//size_t nearestIndex = 0;
+//for (size_t i = 0; i < waypoints.size(); i++)
+//{
+//	// If there's a line of sight from waypoint to player, see if its the nearest waypoint
+//	if (LineCircle(waypoints[i], player.position, CENTRE, OBSTACLE_RADIUS))
+//	{
+//		float waypointDistance = DistanceSqr(waypoints[i], player.position);
+//		if (waypointDistance < shortestDistance)
+//		{
+//			shortestDistance = waypointDistance;
+//			nearestIndex = i;
+//		}
+//	}
+//}
+//
+//Vector2 nearestWaypoint = waypoints[nearestIndex];
+//enemy.position = enemy.position + Normalize(nearestWaypoint - enemy.position) * enemy.speed * dt;
