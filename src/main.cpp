@@ -11,6 +11,17 @@ constexpr int SCREEN_HEIGHT = 800;
 
 constexpr float ENTITY_RADIUS = 25.0f;
 constexpr float WAYPOINT_RADIUS = 15.0f;
+constexpr float OBSTACLE_RADIUS = 150.0f;
+
+constexpr Vector2 CENTRE{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
+
+// Project circle-position onto line segment, then perform a point-circle collision check with the projected point!
+bool LineCircle(Vector2 lineStart, Vector2 lineEnd, Vector2 circlePosition, float circleRadius)
+{
+	Vector2 nearest = ProjectPointLine(lineStart, lineEnd, circlePosition);
+	return DistanceSqr(nearest, circlePosition) <= circleRadius * circleRadius;
+	// More optimal to compare squared distance instead of using a more expensive square-root calculation!
+}
 
 // Basis for all game objects (Player & Enemy)
 struct Entity
@@ -74,9 +85,11 @@ int main()
 
 		bool playerDetectedFar = CheckCollisionCircles(enemy.position, detectionRadiusFar, player.position, ENTITY_RADIUS);
 		bool playerDetectedNear = CheckCollisionCircles(enemy.position, detectionRadiusNear, player.position, ENTITY_RADIUS);
-		bool playerVisible = false;
 		
-		Color enemyColorFG = playerDetectedFar ? RED : GREEN;
+		// Player is visible if there's NOT a collision between the line from enemy to player & the obstacle
+		bool playerVisible = !LineCircle(enemy.position, player.position, CENTRE, OBSTACLE_RADIUS);
+		
+		Color enemyColorFG = playerVisible ? RED : GREEN;
 		Color enemyColorBG = enemyColorFG;
 		enemyColorBG.a = 64;
 
@@ -118,9 +131,13 @@ int main()
 		ClearBackground(RAYWHITE);
 		for (const Vector2& waypoint : waypoints)
 			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
+		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
 		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
+
+		// Visualize line of sight check
+		//DrawLineEx(enemy.position, player.position, 5.0f, enemyColorFG);
 		EndDrawing();
 	}
 	CloseWindow();
