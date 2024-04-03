@@ -23,6 +23,18 @@ bool LineCircle(Vector2 lineStart, Vector2 lineEnd, Vector2 circlePosition, floa
 	// More optimal to compare squared distance instead of using a more expensive square-root calculation!
 }
 
+bool CircleCircle(Vector2 position1, Vector2 position2, float radius1, float radius2, Vector2* mtv = nullptr)
+{
+	float distance = Distance(position1, position2);
+	float radiiSum = radius1 + radius2;
+	bool collision = distance <= radiiSum;
+	if (collision && mtv != nullptr)
+	{
+		*mtv = Normalize(position1 - position2) * (radiiSum - distance);
+	}
+	return collision;
+}
+
 // Basis for all game objects (Player & Enemy)
 struct Entity
 {
@@ -74,7 +86,6 @@ void MoveToVisibility(Entity& viewer/*enemy*/, Entity& target/*players*/)
 
 	Vector2 nearestWaypoint = waypoints[nearestIndex];
 	viewer.position = viewer.position + Normalize(nearestWaypoint - viewer.position) * viewer.speed * GetFrameTime();
-
 }
 
 int main()
@@ -121,8 +132,8 @@ int main()
 		direction = Normalize(direction);
 		player.position = player.position + direction * player.speed * dt;
 
-		bool playerDetectedFar = CheckCollisionCircles(enemy.position, detectionRadiusFar, player.position, ENTITY_RADIUS);
-		bool playerDetectedNear = CheckCollisionCircles(enemy.position, detectionRadiusNear, player.position, ENTITY_RADIUS);
+		bool playerDetectedFar = CircleCircle(enemy.position, player.position, detectionRadiusFar, ENTITY_RADIUS);
+		bool playerDetectedNear = CircleCircle(enemy.position, player.position, detectionRadiusNear, ENTITY_RADIUS);
 		
 		// Player is visible if there's NOT a collision between the line from enemy to player & the obstacle
 		bool playerVisible = !LineCircle(enemy.position, player.position, CENTRE, OBSTACLE_RADIUS);
@@ -155,6 +166,13 @@ int main()
 		{
 			Patrol(enemy, time, current, next);
 		}
+
+		Vector2 enemyMTV = Vector2Zero();
+		Vector2 playerMTV = Vector2Zero();
+		CircleCircle(enemy.position, CENTRE, ENTITY_RADIUS, OBSTACLE_RADIUS, &enemyMTV);
+		CircleCircle(player.position, CENTRE, ENTITY_RADIUS, OBSTACLE_RADIUS, &playerMTV);
+		enemy.position = enemy.position + enemyMTV;
+		player.position = player.position + playerMTV;
 
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
