@@ -22,13 +22,6 @@ struct Entity
 
 int main()
 {
-	Entity player;
-	player.position = Vector2{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
-	player.speed = 250.0f;	// 250 pixels per second
-
-	Entity enemy;
-	float detectionRadius = 250.0f;
-
 	array<Vector2, 4> waypoints
 	{
 		Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f },
@@ -36,6 +29,17 @@ int main()
 		Vector2{ SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f },
 		Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f }
 	};
+
+	Entity player;
+	player.position = Vector2{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
+	player.speed = 250.0f;	// 250 pixels per second
+
+	Entity enemy;
+	enemy.position = waypoints[0];
+	enemy.speed = 200.0f;
+
+	float detectionRadiusFar = 250.0f;
+	float detectionRadiusNear = 100.0f;
 
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
@@ -68,29 +72,53 @@ int main()
 		direction = Normalize(direction);
 		player.position = player.position + direction * player.speed * dt;
 
-		Vector2 a = waypoints[current];
-		Vector2 b = waypoints[next];
-		Vector2 c = Lerp(a, b, time);
-		enemy.position = c;
-
-		// Change interval if close to the destination
-		if (Distance(b, c) < 10.0f)
-		{
-			time = 0.0f;
-			++current %= waypoints.size();
-			++next %= waypoints.size();
-		}
-
-		bool playerDetected = CheckCollisionCircles(enemy.position, detectionRadius, player.position, ENTITY_RADIUS);
-		Color enemyColorFG = playerDetected ? RED : GREEN;
+		bool playerDetectedFar = CheckCollisionCircles(enemy.position, detectionRadiusFar, player.position, ENTITY_RADIUS);
+		bool playerDetectedNear = CheckCollisionCircles(enemy.position, detectionRadiusNear, player.position, ENTITY_RADIUS);
+		bool playerVisible = false;
+		
+		Color enemyColorFG = playerDetectedFar ? RED : GREEN;
 		Color enemyColorBG = enemyColorFG;
 		enemyColorBG.a = 64;
+
+		// Within detection radius?
+		if (playerDetectedFar)
+		{
+			// Has line of sight?
+			if (playerVisible)
+			{
+				if (playerDetectedNear)
+				{
+					// Attack player
+				}
+				else
+				{
+					// Move to player
+				}
+			}
+			else
+			{
+				// Move to line of sight
+			}
+		}
+		else
+		{
+			// Patrol
+			enemy.position = enemy.position + Normalize(waypoints[next] - waypoints[current]) * enemy.speed * dt;
+
+			// Change interval if close to the destination
+			if (Distance(waypoints[next], enemy.position) < 10.0f)
+			{
+				time = 0.0f;
+				++current %= waypoints.size();
+				++next %= waypoints.size();
+			}
+		}
 
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
 		for (const Vector2& waypoint : waypoints)
 			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
-		DrawCircleV(enemy.position, detectionRadius, enemyColorBG);
+		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
 		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
 		EndDrawing();
