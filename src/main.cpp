@@ -2,6 +2,7 @@
 #include "Math.h"
 
 #include <array>
+#include <vector>
 
 #include <iostream>
 using namespace std;
@@ -104,13 +105,16 @@ int main()
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 
-	float time = 0.0f;
+	vector<Vector2> projectiles;
+
+	float patrolTime = 0.0f;
+	float projectileTime = 0.0f;
 	int current = 0;
 	int next = 1;
 	while (!WindowShouldClose())
 	{
 		float dt = GetFrameTime();
-		time += dt;
+		patrolTime += dt;
 
 		Vector2 direction = Vector2Zero();
 		if (IsKeyDown(KEY_W))
@@ -151,10 +155,19 @@ int main()
 				if (playerDetectedNear)
 				{
 					// Attack player
+					if (projectileTime >= 0.5f)
+					{
+						projectileTime = 0.0f;
+						float x = Random(0.0f, SCREEN_WIDTH - ENTITY_RADIUS);
+						float y = Random(0.0f, SCREEN_HEIGHT - ENTITY_RADIUS);
+						projectiles.push_back({ x, y });
+					}
+					projectileTime += dt;
 				}
 				else
 				{
 					// Move to player
+					enemy.position = enemy.position + Normalize(player.position - enemy.position) * enemy.speed * dt;
 				}
 			}
 			else
@@ -164,7 +177,7 @@ int main()
 		}
 		else
 		{
-			Patrol(enemy, time, current, next);
+			Patrol(enemy, patrolTime, current, next);
 		}
 
 		Vector2 enemyMTV = Vector2Zero();
@@ -174,12 +187,22 @@ int main()
 		enemy.position = enemy.position + enemyMTV;
 		player.position = player.position + playerMTV;
 
+		for (const Vector2& projectile : projectiles)
+		{
+			if (CircleCircle(projectile, player.position, ENTITY_RADIUS, ENTITY_RADIUS))
+				return -1;
+		}
+
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
+
 		for (const Vector2& waypoint : waypoints)
 			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
-		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
 
+		for (const Vector2& projectile : projectiles)
+		DrawCircleV(projectile, ENTITY_RADIUS, RED);
+
+		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
 		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
