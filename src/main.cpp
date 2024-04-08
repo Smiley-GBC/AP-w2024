@@ -46,7 +46,7 @@ bool RayCast(const Entity& caster, const std::vector<Entity>& objects, Vector2& 
 	for (const Entity& entity : objects)
 	{
 		bool hit = LineCircle(lineStart, lineEnd, entity.position, entity.radius);
-		bool layer = caster.layer == entity.layer;
+		bool layer = caster.layer != LAYER_IGNORE_RAYCAST;//caster.layer == entity.layer;
 		//bool mask = caster.mask & entity.mask;
 		// Still have the same problem of testing the player against itself...
 		// The only point of layer masks is to support multiple layers by combining layers via bitwise!
