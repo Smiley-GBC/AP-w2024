@@ -36,6 +36,20 @@ bool CircleCircle(Vector2 position1, Vector2 position2, float radius1, float rad
 	return collision;
 }
 
+enum Owner
+{
+	NONE,
+	PLAYER,
+	ENEMY
+};
+
+enum GameState
+{
+	PLAY,
+	WIN,
+	LOSE
+};
+
 // Basis for all game objects (Player & Enemy)
 struct Entity
 {
@@ -43,6 +57,9 @@ struct Entity
 	Vector2 direction;
 	float speed;
 	float radius;
+	float health;
+	float damage;
+	Owner owner;
 };
 
 Vector2 Integrate(Vector2 initial, Vector2 change, float time)
@@ -100,20 +117,22 @@ int main()
 	player.position = Vector2{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
 	player.speed = 250.0f;	// 250 pixels per second
 	player.radius = 25.0f;
+	player.health = 100.0f;
 
 	Entity enemy;
 	enemy.position = waypoints[0];
 	enemy.speed = 200.0f;
 	enemy.radius = 25.0f;
+	enemy.health = 100.0f;
 
 	float detectionRadiusFar = 400.0f;
-	float detectionRadiusNear = 100.0f;
+	float detectionRadiusNear = 200.0f;
 
+	GameState state = PLAY;
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 
 	vector<Entity> projectiles;
-
 	float patrolTime = 0.0f;
 	float projectileTime = 0.0f;
 	int current = 0;
@@ -160,7 +179,28 @@ int main()
 				[&](const Entity& projectile)
 				{
 					Rectangle screen{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-					return !CheckCollisionCircleRec(projectile.position, projectile.radius, screen);
+					bool onScreen = CheckCollisionCircleRec(projectile.position, projectile.radius, screen);
+					
+					bool playerHit = CircleCircle(projectile.position, player.position,
+						projectile.radius, player.radius) && projectile.owner == ENEMY;
+					bool enemyHit = CircleCircle(projectile.position, enemy.position,
+						projectile.radius, enemy.radius) && projectile.owner == PLAYER;
+					
+					if (playerHit)
+					{
+						player.health -= projectile.damage;
+						if (player.health <= 0.0f)
+							state = LOSE;
+					}
+
+					if (enemyHit)
+					{
+						enemy.health -= projectile.damage;
+						if (enemy.health <= 0.0f)
+							state = WIN;
+					}
+
+					return !onScreen || playerHit || enemyHit;
 				}
 			), projectiles.end()
 		);
@@ -186,6 +226,8 @@ int main()
 						projectile.position = enemy.position + direction * enemy.radius;
 						projectile.speed = 250.0f;
 						projectile.radius = 15.0f;
+						projectile.owner = ENEMY;
+						projectile.damage = 25.0f;
 						projectiles.push_back(projectile);
 					}
 					projectileTime += dt;
@@ -213,29 +255,35 @@ int main()
 		enemy.position = enemy.position + enemyMTV;
 		player.position = player.position + playerMTV;
 
-		//for (const Entity& projectile : projectiles)
-		//{
-		//	if (CircleCircle(projectile.position, player.position, projectile.radius, player.radius))
-		//		return -1;
-		//}
-
 		BeginDrawing();
-		ClearBackground(RAYWHITE);
+		switch (state)
+		{
+		case PLAY:
+			ClearBackground(RAYWHITE);
+			for (const Vector2& waypoint : waypoints)
+				DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
 
-		for (const Vector2& waypoint : waypoints)
-			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
+			for (const Entity& projectile : projectiles)
+				DrawCircleV(projectile.position, projectile.radius, ORANGE);
 
-		for (const Entity& projectile : projectiles)
-			DrawCircleV(projectile.position, projectile.radius, ORANGE);
+			DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
+			DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
+			DrawCircleV(enemy.position, enemy.radius, enemyColorFG);
+			DrawCircleV(player.position, player.radius, BLUE);
+			DrawText(TextFormat("%i", projectiles.size()), 10, 10, 20, ORANGE);
+			break;
 
-		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
-		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
-		DrawCircleV(enemy.position, enemy.radius, enemyColorFG);
-		DrawCircleV(player.position, player.radius, BLUE);
-		DrawText(TextFormat("%i", projectiles.size()), 10, 10, 20, ORANGE);
+		case WIN:
+			ClearBackground(SKYBLUE);
+			DrawText("You win :)", 10, 10, 20, DARKGREEN);
+			break;
 
-		// Visualize line of sight check
-		//DrawLineEx(enemy.position, player.position, 5.0f, enemyColorFG);
+		case LOSE:
+			ClearBackground(BLACK);
+			DrawText("You lose :(", 10, 10, 20, RED);
+			break;
+		}
+
 		EndDrawing();
 	}
 	CloseWindow();
