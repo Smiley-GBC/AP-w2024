@@ -155,6 +155,16 @@ int main()
 			projectile.position = Integrate(projectile.position, projectile.direction * projectile.speed, dt);
 		}
 
+		projectiles.erase(
+			remove_if(projectiles.begin(), projectiles.end(),
+				[&](const Entity& projectile)
+				{
+					Rectangle screen{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+					return !CheckCollisionCircleRec(projectile.position, projectile.radius, screen);
+				}
+			), projectiles.end()
+		);
+
 		Color enemyColorFG = playerVisible ? RED : GREEN;
 		Color enemyColorBG = enemyColorFG;
 		enemyColorBG.a = 64;
@@ -203,11 +213,11 @@ int main()
 		enemy.position = enemy.position + enemyMTV;
 		player.position = player.position + playerMTV;
 
-		for (const Entity& projectile : projectiles)
-		{
-			if (CircleCircle(projectile.position, player.position, projectile.radius, player.radius))
-				return -1;
-		}
+		//for (const Entity& projectile : projectiles)
+		//{
+		//	if (CircleCircle(projectile.position, player.position, projectile.radius, player.radius))
+		//		return -1;
+		//}
 
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
@@ -222,6 +232,7 @@ int main()
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, enemy.radius, enemyColorFG);
 		DrawCircleV(player.position, player.radius, BLUE);
+		DrawText(TextFormat("%i", projectiles.size()), 10, 10, 20, ORANGE);
 
 		// Visualize line of sight check
 		//DrawLineEx(enemy.position, player.position, 5.0f, enemyColorFG);
