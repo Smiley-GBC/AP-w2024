@@ -44,6 +44,11 @@ struct Entity
 	float speed;
 };
 
+Vector2 Integrate(Vector2 initial, Vector2 change, float time)
+{
+	return initial + change * time;
+}
+
 array<Vector2, 4> waypoints
 {
 	Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.2f },
@@ -52,14 +57,13 @@ array<Vector2, 4> waypoints
 	Vector2{ SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.8f }
 };
 
-void Patrol(Entity& entity, float& time, int& current, int& next)
+void Patrol(Entity& entity, int& current, int& next)
 {
 	entity.position = entity.position + Normalize(waypoints[next] - entity.position) * entity.speed * GetFrameTime();
 
 	// Change interval if close to the destination
 	if (Distance(waypoints[next], entity.position) < 10.0f)
 	{
-		time = 0.0f;
 		++current %= waypoints.size();
 		++next %= waypoints.size();
 	}
@@ -98,6 +102,9 @@ int main()
 	Entity enemy;
 	enemy.position = waypoints[0];
 	enemy.speed = 200.0f;
+
+	Entity projectile;
+	projectile.position = Vector2{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.25f };
 
 	float detectionRadiusFar = 400.0f;
 	float detectionRadiusNear = 100.0f;
@@ -142,6 +149,10 @@ int main()
 		// Player is visible if there's NOT a collision between the line from enemy to player & the obstacle
 		bool playerVisible = !LineCircle(enemy.position, player.position, CENTRE, OBSTACLE_RADIUS);
 		
+		// Projectile update
+		Vector2 projectileDirection = Normalize(Vector2{ 1.0f, 1.0f });
+		projectile.position = Integrate(projectile.position, projectileDirection * 250.0f, dt);
+
 		Color enemyColorFG = playerVisible ? RED : GREEN;
 		Color enemyColorBG = enemyColorFG;
 		enemyColorBG.a = 64;
@@ -177,7 +188,7 @@ int main()
 		}
 		else
 		{
-			Patrol(enemy, patrolTime, current, next);
+			Patrol(enemy, current, next);
 		}
 
 		Vector2 enemyMTV = Vector2Zero();
@@ -206,6 +217,7 @@ int main()
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
 		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
 		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
+		DrawCircleV(projectile.position, ENTITY_RADIUS, ORANGE);
 
 		// Visualize line of sight check
 		//DrawLineEx(enemy.position, player.position, 5.0f, enemyColorFG);
