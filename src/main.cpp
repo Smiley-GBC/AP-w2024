@@ -10,7 +10,7 @@ using namespace std;
 constexpr int SCREEN_WIDTH = 800;
 constexpr int SCREEN_HEIGHT = 800;
 
-constexpr float ENTITY_RADIUS = 25.0f;
+//constexpr float ENTITY_RADIUS = 25.0f;
 constexpr float WAYPOINT_RADIUS = 15.0f;
 constexpr float OBSTACLE_RADIUS = 150.0f;
 
@@ -40,8 +40,9 @@ bool CircleCircle(Vector2 position1, Vector2 position2, float radius1, float rad
 struct Entity
 {
 	Vector2 position;
-	float angle;
+	Vector2 direction;
 	float speed;
+	float radius;
 };
 
 Vector2 Integrate(Vector2 initial, Vector2 change, float time)
@@ -98,13 +99,12 @@ int main()
 	Entity player;
 	player.position = Vector2{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
 	player.speed = 250.0f;	// 250 pixels per second
+	player.radius = 25.0f;
 
 	Entity enemy;
 	enemy.position = waypoints[0];
 	enemy.speed = 200.0f;
-
-	Entity projectile;
-	projectile.position = Vector2{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.25f };
+	enemy.radius = 25.0f;
 
 	float detectionRadiusFar = 400.0f;
 	float detectionRadiusNear = 100.0f;
@@ -112,7 +112,7 @@ int main()
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 
-	vector<Vector2> projectiles;
+	vector<Entity> projectiles;
 
 	float patrolTime = 0.0f;
 	float projectileTime = 0.0f;
@@ -143,15 +143,17 @@ int main()
 		direction = Normalize(direction);
 		player.position = player.position + direction * player.speed * dt;
 
-		bool playerDetectedFar = CircleCircle(enemy.position, player.position, detectionRadiusFar, ENTITY_RADIUS);
-		bool playerDetectedNear = CircleCircle(enemy.position, player.position, detectionRadiusNear, ENTITY_RADIUS);
+		bool playerDetectedFar = CircleCircle(enemy.position, player.position, detectionRadiusFar, player.radius);
+		bool playerDetectedNear = CircleCircle(enemy.position, player.position, detectionRadiusNear, player.radius);
 		
 		// Player is visible if there's NOT a collision between the line from enemy to player & the obstacle
 		bool playerVisible = !LineCircle(enemy.position, player.position, CENTRE, OBSTACLE_RADIUS);
 		
 		// Projectile update
-		Vector2 projectileDirection = Normalize(Vector2{ 1.0f, 1.0f });
-		projectile.position = Integrate(projectile.position, projectileDirection * 250.0f, dt);
+		for (Entity& projectile : projectiles)
+		{
+			projectile.position = Integrate(projectile.position, projectile.direction * projectile.speed, dt);
+		}
 
 		Color enemyColorFG = playerVisible ? RED : GREEN;
 		Color enemyColorBG = enemyColorFG;
@@ -169,9 +171,12 @@ int main()
 					if (projectileTime >= 0.5f)
 					{
 						projectileTime = 0.0f;
-						float x = Random(0.0f, SCREEN_WIDTH - ENTITY_RADIUS);
-						float y = Random(0.0f, SCREEN_HEIGHT - ENTITY_RADIUS);
-						projectiles.push_back({ x, y });
+						Entity projectile;
+						projectile.direction = Normalize(player.position - enemy.position);
+						projectile.position = enemy.position + direction * enemy.radius;
+						projectile.speed = 250.0f;
+						projectile.radius = 15.0f;
+						projectiles.push_back(projectile);
 					}
 					projectileTime += dt;
 				}
@@ -193,14 +198,14 @@ int main()
 
 		Vector2 enemyMTV = Vector2Zero();
 		Vector2 playerMTV = Vector2Zero();
-		CircleCircle(enemy.position, CENTRE, ENTITY_RADIUS, OBSTACLE_RADIUS, &enemyMTV);
-		CircleCircle(player.position, CENTRE, ENTITY_RADIUS, OBSTACLE_RADIUS, &playerMTV);
+		CircleCircle(enemy.position, CENTRE, enemy.radius, OBSTACLE_RADIUS, &enemyMTV);
+		CircleCircle(player.position, CENTRE, player.radius, OBSTACLE_RADIUS, &playerMTV);
 		enemy.position = enemy.position + enemyMTV;
 		player.position = player.position + playerMTV;
 
-		for (const Vector2& projectile : projectiles)
+		for (const Entity& projectile : projectiles)
 		{
-			if (CircleCircle(projectile, player.position, ENTITY_RADIUS, ENTITY_RADIUS))
+			if (CircleCircle(projectile.position, player.position, projectile.radius, player.radius))
 				return -1;
 		}
 
@@ -210,14 +215,13 @@ int main()
 		for (const Vector2& waypoint : waypoints)
 			DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
 
-		for (const Vector2& projectile : projectiles)
-		DrawCircleV(projectile, ENTITY_RADIUS, RED);
+		for (const Entity& projectile : projectiles)
+			DrawCircleV(projectile.position, projectile.radius, ORANGE);
 
 		DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
 		DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
-		DrawCircleV(enemy.position, ENTITY_RADIUS, enemyColorFG);
-		DrawCircleV(player.position, ENTITY_RADIUS, BLUE);
-		DrawCircleV(projectile.position, ENTITY_RADIUS, ORANGE);
+		DrawCircleV(enemy.position, enemy.radius, enemyColorFG);
+		DrawCircleV(player.position, player.radius, BLUE);
 
 		// Visualize line of sight check
 		//DrawLineEx(enemy.position, player.position, 5.0f, enemyColorFG);
