@@ -134,7 +134,8 @@ int main()
 
 	vector<Entity> projectiles;
 	float patrolTime = 0.0f;
-	float projectileTime = 0.0f;
+	float enemyShootCooldown = 0.0f;
+	float playerShootCooldown = 0.0f;
 	int current = 0;
 	int next = 1;
 	while (!WindowShouldClose())
@@ -142,25 +143,40 @@ int main()
 		float dt = GetFrameTime();
 		patrolTime += dt;
 
-		Vector2 direction = Vector2Zero();
+		Vector2 lookDirection = Normalize(GetMousePosition() - player.position);
+		Vector2 moveDirection = Vector2Zero();
 		if (IsKeyDown(KEY_W))
 		{
-			direction.y -= 1.0f;
+			moveDirection.y -= 1.0f;
 		}
 		if (IsKeyDown(KEY_S))
 		{
-			direction.y += 1.0f;
+			moveDirection.y += 1.0f;
 		}
 		if (IsKeyDown(KEY_A))
 		{
-			direction.x -= 1.0f;
+			moveDirection.x -= 1.0f;
 		}
 		if (IsKeyDown(KEY_D))
 		{
-			direction.x += 1.0f;
+			moveDirection.x += 1.0f;
 		}
-		direction = Normalize(direction);
-		player.position = player.position + direction * player.speed * dt;
+		if (IsKeyDown(KEY_SPACE) && playerShootCooldown >= 0.5f)
+		{
+			playerShootCooldown = 0.0f;
+			Entity projectile;
+			projectile.direction = lookDirection;
+			projectile.position = player.position + lookDirection * player.radius;
+			projectile.speed = 300.0f;
+			projectile.radius = 15.0f;
+			projectile.damage = 20.0f;
+			projectile.owner = PLAYER;
+			projectiles.push_back(projectile);
+;		}
+		playerShootCooldown += dt;
+
+		moveDirection = Normalize(moveDirection);
+		player.position = player.position + moveDirection * player.speed * dt;
 
 		bool playerDetectedFar = CircleCircle(enemy.position, player.position, detectionRadiusFar, player.radius);
 		bool playerDetectedNear = CircleCircle(enemy.position, player.position, detectionRadiusNear, player.radius);
@@ -218,19 +234,19 @@ int main()
 				if (playerDetectedNear)
 				{
 					// Attack player
-					if (projectileTime >= 0.5f)
+					if (enemyShootCooldown >= 0.5f)
 					{
-						projectileTime = 0.0f;
+						enemyShootCooldown = 0.0f;
 						Entity projectile;
 						projectile.direction = Normalize(player.position - enemy.position);
-						projectile.position = enemy.position + direction * enemy.radius;
+						projectile.position = enemy.position + moveDirection * enemy.radius;
 						projectile.speed = 250.0f;
 						projectile.radius = 15.0f;
 						projectile.owner = ENEMY;
 						projectile.damage = 25.0f;
 						projectiles.push_back(projectile);
 					}
-					projectileTime += dt;
+					enemyShootCooldown += dt;
 				}
 				else
 				{
@@ -264,7 +280,12 @@ int main()
 				DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
 
 			for (const Entity& projectile : projectiles)
-				DrawCircleV(projectile.position, projectile.radius, ORANGE);
+			{
+				Color color = GRAY;
+				if (projectile.owner == PLAYER) color = GREEN;
+				if (projectile.owner == ENEMY) color = RED;
+				DrawCircleV(projectile.position, projectile.radius, color);
+			}
 
 			DrawCircleV(CENTRE, OBSTACLE_RADIUS, GRAY);
 			DrawCircleV(enemy.position, detectionRadiusFar, enemyColorBG);
