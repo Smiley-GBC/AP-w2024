@@ -38,6 +38,21 @@ bool CircleCircle(Vector2 p1, float r1, Vector2 p2, float r2, Vector2* mtv = nul
     return distance <= r1 + r2;
 }
 
+bool IsVisible(Vector2 viewer, float viewDistance, Vector2 target, float targetRadius, Vector2 obstacle, float obstacleRadius)
+{
+    Vector2 toTarget = Normalize(target - viewer);
+    Vector2 A = viewer;
+    Vector2 B = viewer + toTarget * viewDistance;
+
+    bool obstacleHit = LineCircle(A, B, obstacle, obstacleRadius);
+    bool targetHit = LineCircle(A, B, viewer, targetRadius);
+
+    bool hasLoS = targetHit;
+    if (targetHit && obstacleHit)
+        hasLoS = Distance(viewer, target) <= Distance(viewer, obstacle);
+    return hasLoS;
+}
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
@@ -49,8 +64,8 @@ int main()
     constexpr float obstacleRadius = 250.0f;
 
     Vector2 playerPosition{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.75f };
-    float playerDetectionRadius = 250.0f;   // same as view distance
-    float playerSpeed = 300.0f;
+    float detectionRadius = 750.0f;
+    float playerSpeed = 500.0f;
     
     Vector2 enemyPosition{ SCREEN_WIDTH * 0.75f, SCREEN_HEIGHT * 0.25f };
     Vector2 enemyVelocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
@@ -81,28 +96,31 @@ int main()
         }
         playerMoveDirection = Normalize(playerMoveDirection);
         playerPosition = playerPosition + playerMoveDirection * playerSpeed * dt;
+        Vector2 toPlayer = Normalize(playerPosition - enemyPosition);
 
-        bool playerDetected = false;
+        bool playerDetected = CheckCollisionCircles(playerPosition, playerRadius, enemyPosition, detectionRadius);
         bool playerVisible = false;
-        if (CheckCollisionCircles(playerPosition, playerRadius, enemyPosition, playerDetectionRadius))
+        bool playerNear = false;
+        if (playerDetected)
         {
-            playerDetected = true;
-
-            // LoS implementation:
-            // Compare distances between enemy to obstacle vs enemy to player if enemy can see obstacle
-            
-            // Enemy is always "facing" the player
-            Vector2 enemyDirection = Normalize(playerPosition - enemyPosition);
-            Vector2 A = enemyPosition;
-            Vector2 B = enemyPosition + enemyDirection * playerDetectionRadius;
-
-            bool obstacleHit = LineCircle(A, B, obstaclePosition, obstacleRadius);
-            bool playerHit = LineCircle(A, B, playerPosition, playerRadius);
-
-            bool hasLoS = playerHit;
-            if (playerHit && obstacleHit)
-                hasLoS = Distance(enemyPosition, playerPosition) <= Distance(enemyPosition, obstaclePosition);
-            playerVisible = hasLoS;
+            playerVisible = IsVisible(enemyPosition, detectionRadius, playerPosition, playerRadius, obstaclePosition, obstacleRadius);
+            if (playerVisible)
+            {
+                playerNear = Distance(playerPosition, enemyPosition) <= detectionRadius * 0.5f;
+                if (playerNear)
+                {
+                    // Perform attack
+                }
+                else
+                {
+                    // Move to attack range
+                }
+            }
+            else
+            {
+                // Move to LoS
+                // (Seek nearest waypoint with LoS to player)
+            }
         }
         else
         {
@@ -131,14 +149,13 @@ int main()
             DrawCircleV(current, waypointRadius, SKYBLUE);
         }
 
-        //Color detection = playerDetected ? RED : GREEN;
         Color detection = playerVisible ? RED : GREEN;
         detection.a = 64;
         DrawCircleV(obstaclePosition, obstacleRadius, GRAY);
         DrawCircleV(playerPosition, playerRadius, GREEN);
-        //DrawCircleV(enemyPosition, enemyRadius, playerDetected ? RED : GREEN);
         DrawCircleV(enemyPosition, enemyRadius, playerVisible ? RED : GREEN);
-        DrawCircleV(enemyPosition, playerDetectionRadius, detection);
+        DrawCircleV(enemyPosition, detectionRadius, detection);
+        DrawLineV(enemyPosition, enemyPosition + toPlayer * detectionRadius, playerVisible ? RED : GREEN);
         EndDrawing();
     }
 
