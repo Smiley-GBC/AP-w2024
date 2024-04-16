@@ -30,27 +30,35 @@ int main()
     float radius = 25.0f;
     Vector2 position{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
     Vector2 velocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
-    size_t waypointIndex = 0;
 
+    // Index of the waypoint we're currently seeking
+    size_t waypoint = 0;
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
+        size_t previous = waypoint == 0 ? waypoints.size() - 1 : waypoint - 1;
+        Vector2 proj = ProjectPointLine(waypoints[previous], waypoints[waypoint], position);
 
-        if (CheckCollisionCircles(position, AI_RADIUS, waypoints[waypointIndex], WAYPOINT_RADIUS))
-            ++waypointIndex %= waypoints.size();
+        if (CheckCollisionCircles(position, AI_RADIUS, waypoints[waypoint], WAYPOINT_RADIUS))
+            ++waypoint %= waypoints.size();
 
-        velocity = velocity + Seek(waypoints[waypointIndex], position, velocity, 1000.0f) * dt;
+        velocity = velocity + Seek(waypoints[waypoint], position, velocity, 1000.0f) * dt;
         position = position + velocity * dt;
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        for (Vector2 waypoint : waypoints)
+
+        for (size_t i = 0; i < waypoints.size(); i++)
         {
-            DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
+            Vector2 current = waypoints[i];
+            Vector2 next = waypoints[(i + 1) % waypoints.size()];
+            DrawLineEx(current, next, 5.0f, BLUE);
+            DrawCircleV(current, WAYPOINT_RADIUS, SKYBLUE);
         }
 
         DrawCircleV(position, AI_RADIUS, RED);
+        DrawCircleV(proj, AI_RADIUS, BLUE);
         EndDrawing();
     }
 
