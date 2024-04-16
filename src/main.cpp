@@ -39,7 +39,7 @@ int main()
         size_t previous = waypoint == 0 ? waypoints.size() - 1 : waypoint - 1;
         Vector2 proj = ProjectPointLine(waypoints[previous], waypoints[waypoint], position);
 
-        if (CheckCollisionCircles(position, AI_RADIUS, waypoints[waypoint], WAYPOINT_RADIUS))
+        if (CheckCollisionCircles(proj, AI_RADIUS, waypoints[waypoint], WAYPOINT_RADIUS))
             ++waypoint %= waypoints.size();
 
         velocity = velocity + Seek(waypoints[waypoint], position, velocity, 1000.0f) * dt;
@@ -58,7 +58,7 @@ int main()
         }
 
         DrawCircleV(position, AI_RADIUS, RED);
-        DrawCircleV(proj, AI_RADIUS, BLUE);
+        DrawCircleV(proj, 10.0f, BLUE);
         EndDrawing();
     }
 
