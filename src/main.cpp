@@ -6,10 +6,6 @@ using namespace std;
 constexpr float SCREEN_WIDTH = 1280.0f;
 constexpr float SCREEN_HEIGHT = 720.0f;
 
-
-constexpr float AI_RADIUS = 35.0f;
-constexpr float PLAYER_RADIUS = 35.0f;
-constexpr float WAYPOINT_RADIUS = 25.0f;
 array<Vector2, 4> waypoints
 {
     Vector2{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.25f },   // top left
@@ -34,15 +30,19 @@ int main()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(60);
 
-    float playerDetectionRadius = 250.0f;
+    constexpr float playerRadius = 35.0f;
+    constexpr float enemyRadius = 35.0f;
+    constexpr float waypointRadius = 25.0f;
+    constexpr float obstacleRadius = 250.0f;
+
+    Vector2 playerPosition{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.75f };
+    float playerDetectionRadius = 250.0f;   // same as view distance
     float playerSpeed = 300.0f;
-    Vector2 playerPosition{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
-    Vector2 enemyPosition{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
+    
+    Vector2 enemyPosition{ SCREEN_WIDTH * 0.75f, SCREEN_HEIGHT * 0.25f };
     Vector2 enemyVelocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
 
-    Vector2 A = waypoints[0];
-    Vector2 B = waypoints[2];
-    
+    Vector2 obstaclePosition{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
 
     // Index of the waypoint we're currently seeking
     size_t waypoint = 0;
@@ -69,19 +69,34 @@ int main()
         playerMoveDirection = Normalize(playerMoveDirection);
         playerPosition = playerPosition + playerMoveDirection * playerSpeed * dt;
 
-        bool lineCircle = LineCircle(A, B, playerPosition, PLAYER_RADIUS);
-
         bool playerDetected = false;
-        if (CheckCollisionCircles(playerPosition, PLAYER_RADIUS, enemyPosition, playerDetectionRadius))
+        bool playerVisible = false;
+        if (CheckCollisionCircles(playerPosition, playerRadius, enemyPosition, playerDetectionRadius))
         {
             playerDetected = true;
+
+            // LoS implementation:
+            // Compare distances between enemy to obstacle vs enemy to player if enemy can see obstacle
+            
+            // Enemy is always "facing" the player
+            Vector2 enemyDirection = Normalize(playerPosition - enemyPosition);
+            Vector2 A = enemyPosition;
+            Vector2 B = enemyPosition + enemyDirection * playerDetectionRadius;
+
+            bool obstacleHit = LineCircle(A, B, obstaclePosition, obstacleRadius);
+            bool playerHit = LineCircle(A, B, playerPosition, playerRadius);
+
+            bool hasLoS = playerHit;
+            if (playerHit && obstacleHit)
+                hasLoS = Distance(enemyPosition, playerPosition) <= Distance(enemyPosition, obstaclePosition);
+            playerVisible = hasLoS;
         }
         else
         {
             // Patrol
             size_t previous = waypoint == 0 ? waypoints.size() - 1 : waypoint - 1;
             Vector2 proj = ProjectPointLine(waypoints[previous], waypoints[waypoint], enemyPosition);
-            if (CheckCollisionCircles(proj, AI_RADIUS, waypoints[waypoint], WAYPOINT_RADIUS))
+            if (CheckCollisionCircles(proj, enemyRadius, waypoints[waypoint], waypointRadius))
                 ++waypoint %= waypoints.size();
 
             enemyVelocity = enemyVelocity + Seek(waypoints[waypoint], enemyPosition, enemyVelocity, 1000.0f) * dt;
@@ -96,16 +111,17 @@ int main()
             Vector2 current = waypoints[i];
             Vector2 next = waypoints[(i + 1) % waypoints.size()];
             DrawLineEx(current, next, 5.0f, BLUE);
-            DrawCircleV(current, WAYPOINT_RADIUS, SKYBLUE);
+            DrawCircleV(current, waypointRadius, SKYBLUE);
         }
 
-        Color detection = playerDetected ? RED : GREEN;
+        //Color detection = playerDetected ? RED : GREEN;
+        Color detection = playerVisible ? RED : GREEN;
         detection.a = 64;
-        DrawCircleV(playerPosition, PLAYER_RADIUS, GREEN);
-        DrawCircleV(enemyPosition, AI_RADIUS, playerDetected ? RED : GREEN);
+        DrawCircleV(obstaclePosition, obstacleRadius, GRAY);
+        DrawCircleV(playerPosition, playerRadius, GREEN);
+        //DrawCircleV(enemyPosition, enemyRadius, playerDetected ? RED : GREEN);
+        DrawCircleV(enemyPosition, enemyRadius, playerVisible ? RED : GREEN);
         DrawCircleV(enemyPosition, playerDetectionRadius, detection);
-        DrawLineEx(A, B, 5.0f, lineCircle ? RED : GREEN);
-        //DrawCircleV(proj, 10.0f, BLUE);
         EndDrawing();
     }
 
