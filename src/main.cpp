@@ -1,5 +1,21 @@
 #include "raylib.h"
 #include "Math.h"
+#include <array>
+
+using namespace std;
+constexpr float SCREEN_WIDTH = 1280.0f;
+constexpr float SCREEN_HEIGHT = 720.0f;
+
+
+constexpr float AI_RADIUS = 35.0f;
+constexpr float WAYPOINT_RADIUS = 25.0f;
+array<Vector2, 4> waypoints
+{
+    Vector2{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.25f },   // top left
+    Vector2{ SCREEN_WIDTH * 0.75f, SCREEN_HEIGHT * 0.25f },   // top right
+    Vector2{ SCREEN_WIDTH * 0.75f, SCREEN_HEIGHT * 0.75f },   // bot right
+    Vector2{ SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.75f },   // bot left
+};
 
 Vector2 Seek(Vector2 target, Vector2 position, Vector2 velocity, float speed)
 {
@@ -8,29 +24,33 @@ Vector2 Seek(Vector2 target, Vector2 position, Vector2 velocity, float speed)
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
     SetTargetFPS(60);
 
     float radius = 25.0f;
-    Vector2 position{ screenWidth * 0.5f, screenHeight * 0.5f };
+    Vector2 position{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
     Vector2 velocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
+    size_t waypointIndex = 0;
 
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
-        Vector2 mouse = GetMousePosition();
-        velocity = velocity + Seek(mouse, position, velocity, 1000.0f) * dt;
-        position = position + velocity * dt;
 
-        if (CheckCollisionPointCircle(mouse, position, radius))
-            break;
+        if (CheckCollisionCircles(position, AI_RADIUS, waypoints[waypointIndex], WAYPOINT_RADIUS))
+            ++waypointIndex %= waypoints.size();
+
+        velocity = velocity + Seek(waypoints[waypointIndex], position, velocity, 1000.0f) * dt;
+        position = position + velocity * dt;
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("Don't let the circle touch the cursor!", 10, 10, 20, RED);
-        DrawCircleV(position, radius, RED);
+
+        for (Vector2 waypoint : waypoints)
+        {
+            DrawCircleV(waypoint, WAYPOINT_RADIUS, SKYBLUE);
+        }
+
+        DrawCircleV(position, AI_RADIUS, RED);
         EndDrawing();
     }
 
