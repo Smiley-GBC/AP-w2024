@@ -25,6 +25,19 @@ bool LineCircle(Vector2 A, Vector2 B, Vector2 P, float r)
     return Distance(proj, P) <= r;              // Check if projection is less than circle radius (touching if so)!
 }
 
+// mtv points from 2 to 1
+bool CircleCircle(Vector2 p1, float r1, Vector2 p2, float r2, Vector2* mtv = nullptr)
+{
+    Vector2 direction = p1 - p2;
+    float distance = Length(direction);
+    if (distance <= r1 + r2 && mtv != nullptr)
+    {
+        float penetration = (r1 + r2) - distance;
+        *mtv = Normalize(direction) * penetration;
+    }
+    return distance <= r1 + r2;
+}
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
@@ -102,6 +115,10 @@ int main()
             enemyVelocity = enemyVelocity + Seek(waypoints[waypoint], enemyPosition, enemyVelocity, 1000.0f) * dt;
             enemyPosition = enemyPosition + enemyVelocity * dt;
         }
+
+        Vector2 mtv{};
+        CircleCircle(playerPosition, playerRadius, obstaclePosition, obstacleRadius, &mtv);
+        playerPosition = playerPosition + mtv;
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
