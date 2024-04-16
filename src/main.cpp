@@ -23,6 +23,12 @@ Vector2 Seek(Vector2 target, Vector2 position, Vector2 velocity, float speed)
     return Normalize(target - position) * speed - velocity;
 }
 
+bool LineCircle(Vector2 A, Vector2 B, Vector2 P, float r)
+{
+    Vector2 proj = ProjectPointLine(A, B, P);   // Find circle's position on line segment
+    return Distance(proj, P) <= r;              // Check if projection is less than circle radius (touching if so)!
+}
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
@@ -33,6 +39,10 @@ int main()
     Vector2 playerPosition{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
     Vector2 enemyPosition{ SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };
     Vector2 enemyVelocity{ Random(-10.0f, 10.0f), Random(-10.0f, 10.0f) };
+
+    Vector2 A = waypoints[0];
+    Vector2 B = waypoints[2];
+    
 
     // Index of the waypoint we're currently seeking
     size_t waypoint = 0;
@@ -58,6 +68,8 @@ int main()
         }
         playerMoveDirection = Normalize(playerMoveDirection);
         playerPosition = playerPosition + playerMoveDirection * playerSpeed * dt;
+
+        bool lineCircle = LineCircle(A, B, playerPosition, PLAYER_RADIUS);
 
         bool playerDetected = false;
         if (CheckCollisionCircles(playerPosition, PLAYER_RADIUS, enemyPosition, playerDetectionRadius))
@@ -92,6 +104,7 @@ int main()
         DrawCircleV(playerPosition, PLAYER_RADIUS, GREEN);
         DrawCircleV(enemyPosition, AI_RADIUS, playerDetected ? RED : GREEN);
         DrawCircleV(enemyPosition, playerDetectionRadius, detection);
+        DrawLineEx(A, B, 5.0f, lineCircle ? RED : GREEN);
         //DrawCircleV(proj, 10.0f, BLUE);
         EndDrawing();
     }
